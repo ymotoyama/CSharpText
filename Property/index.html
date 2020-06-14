@@ -13,11 +13,234 @@
     <p class="title">C# プロパティ</p>
     <h1>はじめに</h1>
     <h2>カプセル化</h2>
-    <p>オブジェクト指向プログラミングにおいては、基本的に、クラスの情報はクラスの内部に隠蔽し、外部からアクセス可能なものは必要最小限に留めます。これにより、クラス利用者はクラスの内部実装を熟知する必要が無くなるし、クラスの実装に変更があっても、クラス利用者には影響が及ばないのです。</p>
+    <p>オブジェクト指向プログラミングにおいては、基本的に、クラスの情報はクラスの内部に隠蔽し、外部からはアクセスできないようにします。これにより、クラス利用者はクラスの内部実装を熟知する必要が無くなるし、クラスの実装に変更があっても、クラス利用者には影響が及ばないのです。</p>
     <p>この考え方を<strong>カプセル化</strong>と言います。</p>
-    <h2>プロパティとは？</h2>
-    <p>C#の<strong>プロパティ</strong>とは、アクセサーを簡単に定義・呼び出しできるようにするためのC#の構文です。</p>
+    <p>
+    </p>
     <h2>アクセサーとは？</h2>
-    <p>クラスの内部情報を外部からアクセス可能にするためのメソッドのことです。オブジェクト指向においては、基本的に、クラスの情報はクラスの内部に隠蔽し</p>
+    <p>基本的に情報はクラス内部に隠蔽するといっても、やはり外部からアクセスする必要がある変数は必ずあります。そのときに、単純に変数のアクセスレベルを<code>public</code>にするのではなく、変数にアクセスするためのメソッドを用意し、利用者にはそれを通じてアクセスしてもらうということをよくやります。</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; private int m_LifePoint;<br>
+      &nbsp;&nbsp;&nbsp; private string m_Name;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public int GetLifePoint()<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return m_LifePoint;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public void SetLifePoint(int lifePoint)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_LifePoint = lifePoint;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public string GetName()<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return m_Name;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public void SetName(string name)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_Name = name;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>上記のように、値を取得するためのメソッド、値を設定するためのメソッドを作るのです。<br>
+      これらのメソッドを<strong>Getter</strong>, <strong>Setter</strong>と呼びます。まとめて<strong>アクセサーメソッド</strong>と呼びます。</p>
+    <p>このようなメソッドを作るのは、はっきり言ってめんどくさいですが、バグの少ないプログラムや保守性の高いプログラムを作るためには重要なことなので、プロはみんなやっています。</p>
+    <h2>プロパティとは？</h2>
+    <p>上記のサンプルコードのようなものは、C++やJavaでよく見られるものです。C#ではアクセサーメソッドを簡潔に記述するための仕組みが用意されています。<strong>プロパティ</strong>です。</p>
+    <p>C#のプロパティは、アクセサーメソッドを「定義する」のも「呼び出す」のもちょっと楽になる、嬉しい仕組みです。</p>
+    <h1>プロパティの基本文法</h1>
+    <h2>定義</h2>
+    <p>プロパティを定義する構文は次のようになります：</p>
+    <p class="source">アクセスレベル 型名 プロパティ名<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; get<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // getterの処理。値をreturnする。<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; set<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // setterの処理。代入された値が一時変数valueに入ってくる。<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>前章のサンプルコードを、プロパティを利用して書き直してみます：</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; private int m_LifePoint;<br>
+      &nbsp;&nbsp;&nbsp; private string m_Name;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return m_LifePoint;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_LifePoint = value;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public string Name<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return m_Name;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_Name = value;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>慣れないと、はっきりいってめんどくさいですが、慣れの問題なので、慣れてください。</p>
+    <p>上記のようなシンプルなプロパティの場合、縦に何行も使うと邪魔なので、次のように改行を減らしてしまうこともよくあります：</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; private int m_LifePoint;<br>
+      &nbsp;&nbsp;&nbsp; private string m_Name;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get { return m_LifePoint; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set { m_LifePoint = value; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public string Name<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get { return m_Name; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set { m_Name = value; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <h2>呼び出し方</h2>
+    <p>呼び出し方が、従来のGetter/Setterに比べて、圧倒的に便利になります。あたかも、普通の変数を扱うような記述でアクセスすることが可能です。</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Character c = new Character();<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 値を設定するときは、変数に代入するのと同様の書き方ができる<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c.Name = "太郎";<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c.LifePoint = 100;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 値を取得するときも、変数を読み取るときと同様の書き方ができる<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c.Name);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c.LifePoint);<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>このように、プロパティは、呼び出し側の利便性が高いです。クラスというものは、定義する回数より、それを利用する回数のほうが多いはずなので、呼び出し側に優しいほうが良いです。</p>
+    <h2>君はすでにそのメリットを受けている</h2>
+    <p>Unityなどでプログラムを書いていると、すでにこのプロパティのメリットを享受しています。<br>
+      Unityで次のようなプログラムは一般的ですが：</p>
+    <p class="source">// オブジェクトのx座標を取得する<br>
+      float posX = someObject.transform.position.x;</p>
+    <p>もし、C#にプロパティが無かったら、次のようになってしまいます：</p>
+    <p class="source">// オブジェクトのx座標を取得する<br>
+      float posX = someObject.GetComponent&lt;Transform&gt;().GetPosition().GetX();</p>
+    <p>絶対イヤですね！（C++では普通によく見る光景…）<br>
+      ありがとうプロパティ！</p>
+    <h1>getとsetを異なるアクセスレベルにする</h1>
+    <p>getとsetを異なるアクセスレベルにすることができます。よくあるのが「get（読み取り）はpublicで良いが、外部からのset（書き込み）は禁止したい」というものです。次のように書くことができます：</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; private int m_LifePoint;<br>
+      &nbsp;&nbsp;&nbsp; private string m_Name;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get { return m_LifePoint; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>private</strong> set { m_LifePoint = value; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public string Name<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get { return m_Name; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>private</strong> set { m_Name = value; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>このようにすると、set（書き込み）はクラス内部からしかできなくなります。</p>
+    <h1>自動実装プロパティ</h1>
+    <h2>自動実装プロパティ</h2>
+    <p>C#のプロパティにはさらに便利は書き方があります。<br>
+      上記のようなシンプルなアクセサー（特に処理が無く、ただ単に値をget/setしてるだけ）であれば、もっと短く書くことができます。次のように書きます：</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint { get; set; }<br>
+      &nbsp;&nbsp;&nbsp; public string Name { get; set; }<br>
+      }</p>
+    <p>なんと、変数の定義すら要らなくなりました！<br>
+      内部的には、自動的に2-1章と同様のコードが生成されています。というわけで「自動実装プロパティ」と呼ばれます。</p>
+    <h2>異なるアクセスレベルにする</h2>
+    <p>自動実装プロパティでも、getとsetで異なるアクセスレベルを設定することができます。外部からのsetを禁止したい場合は次のようになります：</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint { get; <strong>private</strong> set; }<br>
+      &nbsp;&nbsp;&nbsp; public string Name { get; <strong>private</strong> set; }<br>
+      }</p>
+    <h2>ショートカット入力</h2>
+    <p>Visual Studioの補助を使うことで、定義の記述をさらに楽にすることができます。</p>
+    <p><code>prop</code>と入力し、<code>tab</code>を2回押してください。すると、自動実装プロパティの雛形が出てくるので、あとは型名とプロパティ名を入力するだけです。</p>
+    <p>楽すぎる！</p>
+    <h2>UnityのInspectorからいじれない</h2>
+    <p>こんなに楽で便利な自動実装プロパティですが、<strong>Unityとの相性が悪い</strong>です…</p>
+    <p>Unityといえば、フィールド（メンバー変数）をpublic（または[SerializeField]属性）にしておくことにより、UnityエディターのInspectorビューから値をいじれる機能が超重要ですが、<strong>自動実装プロパティを使うと、Inspectorからいじれません</strong>。</p>
+    <p>ホントこれなんとかしてほしすぎる…😫</p>
+    <p>なので、本山は、Unityでプログラムを書くときは、状況に応じて以下のどちらかの方法で実装します：</p>
+    <ul>
+      <li>特に処理を挟み込む必要が無ければ、プロパティを使わずに普通の変数（public または [SerializeField] ）にする</li>
+      <li>処理を挟み込む必要がある場合は自動実装ではないプロパティを使う（そして、フィールドを[SerializeField]にする）</li>
+    </ul>
+    <h1>読み取り専用プロパティ</h1>
+    <p>読み取り専用（getしかできない）プロパティを作れます（C#6.0から可能となった）。</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint { get; }<br>
+      &nbsp;&nbsp;&nbsp; public string Name { get; }<br>
+      }</p>
+    <p>初期値の設定はコンストラクタで行うか、次項の「プロパティ初期化子」で行います。</p>
+    <h1>プロパティ初期化子</h1>
+    <p>定義と同じ行で初期値を設定できます（C#6.0から可能となった）。</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint { get; private set; } <strong>= 100;</strong><br>
+      &nbsp;&nbsp;&nbsp; public string Name { get; private set; } <strong>= "名無し";</strong><br>
+      }</p>
+    <h1>expression-bodiedなプロパティ</h1>
+    <p>正直、それほど頻繁に使わないですが、何らかの処理がある読み取り専用プロパティをより短く記述することができます。</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint { get; set; }<br>
+      &nbsp;&nbsp;&nbsp; public string Name { get; set; }<br>
+      &nbsp;&nbsp;&nbsp; // 表示用に名前とライフポイントを結合した文字列を返却<br>
+      &nbsp;&nbsp;&nbsp; <strong>public string NameAndLife =&gt; Name + " (" + LifePoint + ")";</strong><br>
+      }</p>
+    <p>ちなみに、プロパティとは全然関係無いのですが、C#6.0から、新しい文字列連結方法が追加されました。文字列リテラルの前に<code>$</code>を書くことで、文字列リテラル中に変数を埋め込む形で記述することができます。次のようになります：</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint { get; set; }<br>
+      &nbsp;&nbsp;&nbsp; public string Name { get; set; }<br>
+      &nbsp;&nbsp;&nbsp; // 表示用に名前とライフポイントを結合した文字列を返却<br>
+      &nbsp;&nbsp;&nbsp; public string NameAndLife =&gt; <strong>$"{Name} ({LifePoint})"</strong>;<br>
+      }</p>
+    <p>今後はこちらの記法が推奨されます。</p>
+    <h1>プロパティの命名規則</h1>
+    <p>Microsoftが推奨するプロパティの名前は、大文字で開始するPascal Caseです。</p>
+    <p>ところが、<strong>Unityのソースコードでは、小文字で開始するCamel Caseとなっています</strong>。<br>
+      Unityの用意したあらゆるプロパティがそうなっています。例えば、transform、positionなどなど…</p>
+    <p>というわけで、Unityでプロパティを書くときは、小文字で始めるのが良さそうなものですが…どうやら世間的には、Microsoftの方針に従い、大文字で始める人のほうが多い模様です。このあたりは、<strong>プロジェクトの方針に従いましょう</strong>。</p>
+    <h1>プロパティにするかメソッドにするか</h1>
+    <p>プロパティとメソッドでは、どちらでもほぼ同じことが実現できます。利用者側から見て、何らかの処理を実行したいわけではなく、値を取得/設定したいだけなのであれば、基本的にプロパティを使うべきですが、常にプロパティが適切というわけでもありません。<strong>以下に該当する場合はメソッドにしましょう</strong>。</p>
+    <ul>
+      <li><strong>予測しづらい副作用がある</strong>。getしただけなのに内部状態が変わってしまう場合など。</li>
+      <li><strong>重い処理が走る</strong>。時間のかかる複雑な計算が行われたり、ファイルアクセス、DBアクセス、Webアクセスなどが行われたりする場合など。</li>
+    </ul>
+    <p>とにかく、プロパティというものは、利用者側からすれば、ほとんど変数のようであって、副作用は無いもの、として扱いたいわけです。アクセスしただけで副作用があったり、処理に時間がかかってしまうのは期待を裏切ることになります。ですので、そういった場合は、プロパティではなくメソッドにしましょう。</p>
+    <p>また、その際、ただメソッドにすれば良いというわけではなく、メソッド名も工夫しましょう。例えば「GetData()」という名前のメソッドがあったとして、呼び出したらWebにデータを取りに行って3秒間固まった、というのは、完全に利用者の期待を裏切っています。「FetchData()」や「DownloadData()」などといった、時間がかかることをにおわす名前にしましょう。</p>
+    <p><br>
+    </p>
   </body>
 </html>
