@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE">
+    <title>C# 命名規則など</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <p class="title">C# 命名規則など</p>
+    <br>
+    <ol id="mozToc">
+      <!--mozToc h1 1 h2 2-->
+      <li><a href="#mozTocId321890">はじめに</a></li>
+      <li><a href="#mozTocId783566">用語の解説</a>
+        <ol>
+          <li><a href="#mozTocId132068">Pascal Case</a></li>
+          <li><a href="#mozTocId999022">Camel Case</a></li>
+          <li><a href="#mozTocId319039">Snake Case</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId875438">クラスの名前</a></li>
+      <li><a href="#mozTocId868549">メソッドの名前</a></li>
+      <li><a href="#mozTocId103402">変数の名前</a>
+        <ol>
+          <li><a href="#mozTocId761179">フィールド</a></li>
+          <li><a href="#mozTocId880040">一時変数</a></li>
+          <li><a href="#mozTocId420942">メソッドの引数</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId587113">Enumの名前</a></li>
+      <li><a href="#mozTocId39355">定数の名前</a></li>
+      <li><a href="#mozTocId471275">まとめ</a></li>
+    </ol>
+    <h1><a id="mozTocId321890" class="mozTocH1"></a>はじめに</h1>
+    <p>C#では、変数名やクラス名の名前はわりと自由に付けることが可能です。大文字だろうが小文字だろうが、ビルドは通ります。しかし、一定の規則に則って命名することが推奨されます。</p>
+    <p>推奨された命名の規則を「<strong>命名規則</strong>」と呼びます。C#はMicrosoftが開発した言語なので、大枠はMicrosoftの方針に従うのが良いでしょう。細かい部分では、プロジェクトやチーム毎の違いがあると思われるので、そこの方針に従います。大切なのは、自分を貫くことではなく、周りに合わせることです。</p>
+    <p>それでは、Microsoftが推奨する、C#の標準的な命名規則を学んでいきましょう。</p>
+    <h1><a id="mozTocId783566" class="mozTocH1"></a>用語の解説</h1>
+    <p>C#の命名規則を学ぶ前に、命名規則の話をするときに頻出する単語を整理しておきましょう。</p>
+    <h2><a id="mozTocId132068" class="mozTocH2"></a>Pascal Case</h2>
+    <p><strong>Pascal Case（パスカルケース）</strong>とは、先頭を大文字にし、単語の区切りも大文字にする方式です。</p>
+    <p class="source">PascalCaseExample<br>
+    </p>
+    プログラミング言語「Pascal」で使われていたことから、こう呼ばれるらしいです。<br>
+    <br>
+    <h2>Camel Case</h2>
+    <p><strong>Camel Case（キャメルケース）</strong>とは、先頭は小文字で始まり、単語の区切りのみ大文字にする方式です。</p>
+    <p class="source">camelCaseExample</p>
+    <p>Camelとはラクダのことです。Camel Caseで書かれた文字列がラクダのコブのようにデコボコするので、こう呼ばれています。</p>
+    <h2><a id="mozTocId319039" class="mozTocH2"></a>Snake Case</h2>
+    <p><strong>Snake Case（スネークケース）</strong>とは、単語をアンダーバーで区切る方式です。小文字スネークケースと大文字スネークケースの両方がありえます。</p>
+    <p class="source">snake_case_example<br>
+      SNAKE_CASE_EXAMPLE</p>
+    <p>Snake CaseはC言語や昔のC++でよく使われた形式です。<strong>C#では基本的に使いません</strong>。C#でSnake Caseを使っていた人は<strong>今すぐやめてください</strong>。<br>
+      Visual Studioの補完機能との相性も悪いので、たとえC++を書くときでも、この方式は使いたくないですね。</p>
+    <h1><a id="mozTocId875438" class="mozTocH1"></a>クラスの名前</h1>
+    <p>クラスの名前は、Pascal Caseで表します。</p>
+    <p class="source">public class <strong>SampleClass</strong><br>
+      {<br>
+      }</p>
+    <h1><a id="mozTocId868549" class="mozTocH1"></a>メソッドの名前</h1>
+    <p>メソッドもPascal Caseで表します。</p>
+    <p class="source">public void <strong>SampleMethod</strong>()<br>
+      {<br>
+      }</p>
+    <p><br>
+    </p>
+    <p class="column"><b>メソッドの命名方針</b><br>
+      <br>
+      メソッドの名前は、基本的に英語の文法に則ります。<br>
+      <br>
+      例えば、データを削除するメソッドだとしたらDeleteData()とします。DataDelete()とはしません。<br>
+      このようにすることで、読みやすいプログラムになります。<br>
+      <br>
+      何かを調べてbool型の結果を返却するメソッドはIs, Has, Canなどで始めることが多いです。<br>
+      例えば、自身がアクティブかを調べるメソッドであればIsActive()、ジャンプ可能かどうかを調べるメソッドであればCanJump()などとします。<br>
+      このようにすることで、プログラムが普通の英文に近くなり、読みやすくなります。<br>
+      <br>
+      例：もしプレイヤーがジャンプ可能ならジャンプする処理<br>
+      if (player.CanJump())<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; ジャンプ処理<br>
+      }<br>
+      <br>
+      ※あ、でもC#の場合は、bool型の結果を返却するのはメソッドではなくプロパティのほうが適切なケースが多いですね。</p>
+    <p><br>
+    </p>
+    <h1><a id="mozTocId103402" class="mozTocH1"></a>変数の名前</h1>
+    <h2><a id="mozTocId761179" class="mozTocH2"></a>フィールド</h2>
+    <p>フィールド（メンバー変数）の命名規則は、いくつかの派閥があります。<strong>プロジェクトの方針に従いましょう</strong>。</p>
+    <h3>Microsoftの方針</h3>
+    <p>Microsoftの方針は、Camel Caseです。つまり、先頭小文字で単語の区切りを大文字にするものです。</p>
+    <p class="source">private int <strong>sampleVariable</strong>;</p>
+    <p>ただし、この方針に則ると、例えばメソッドの引数と名前が被ってしまうことが多くなったりして、頻繁に<code>this.</code>を使用する必要が出てきます。そのため、後述する方法を推奨する派閥もあります。</p>
+    <p><br>
+    </p>
+    <h3>アンダーバー付ける派</h3>
+    <p>変数名をアンダーバーから始める方針です。</p>
+    <p class="source">private int <strong>_sampleVariable</strong>;</p>
+    <p>こうすることで、一目でフィールドだと判別できたり、メソッドの引数の名前が被らなくなったりするなどのメリットがあります。<br>
+      ちなみに、このように名前の先頭に付与する文字列のことを<strong>プレフィックス</strong>（接頭語）と呼びます。</p>
+    <p>アンダーバーを後ろに付ける派閥もあります。</p>
+    <p class="source">private int <strong>sampleVariable_</strong>;</p>
+    <p>C++界隈では最近この方式が増えているらしい。<br>
+      このように名前の末尾に付与する文字列のことを<strong>サフィックス</strong>（接尾語）と呼びます。</p>
+    <p><br>
+    </p>
+    <h3>m_付ける派</h3>
+    <p><code>m_</code> を変数名の先頭に付けるという方針です。</p>
+    <p class="source">private int <strong>m_sampleVariable</strong>;</p>
+    <p>mはMemberのMだと思う。</p>
+    <p><strong>Unity社はこの派閥</strong>なんですよね。しかもm_大文字始まりっていう、ちょっと珍しいタイプです。</p>
+    <p class="source">private int <strong>m_SampleVariable</strong>;</p>
+    <p>なので、本山はUnityでプログラムを書くときは、この方式で書きます。</p>
+    <p><br>
+    </p>
+    <h2><a id="mozTocId880040" class="mozTocH2"></a>一時変数</h2>
+    <p>メソッドの中で一時的に使う変数の名前は、Camel Caseにします。</p>
+    <p class="source">public void SampleMethod()<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; int <strong>sampleVariable</strong>;<br>
+      }</p>
+    <p><br>
+    </p>
+    <h2><a id="mozTocId420942" class="mozTocH2"></a>メソッドの引数</h2>
+    <p>メソッドの引数名はCamel Caseにします。</p>
+    <p class="source">public void SampleMethod(int <strong>sampleNumber</strong>, string <strong>sampleString</strong>)<br>
+      {<br>
+      }</p>
+    <p><strong>引数名は変に省略せず、名前から意味が読み取れるようにしましょう</strong>。ここで下手に省略してしまうと、呼び出す人に混乱をもたらします。メソッドは使ってなんぼなので、使いづらくなってしまっては本末転倒です。</p>
+    <p>たまにアンダーバーなどを付けている学生がいますが、やめましょう。</p>
+    <p><br>
+    </p>
+    <p class="column"><b>変数名やメソッド名は省略しない</b><br>
+      <br>
+      変数名やメソッド名を省略するのは、やめましょう。<br>
+      例えば、GetAP()ではなくGetAttackPoint()としましょう。<br>
+      昔は、ソースコードを紙に手書きで書いていたり、モニターが小さかったりしたため、短い名前が好まれましたが、現在ではそのような制約はありません。名前が長くても、Visual Studioが入力を補完してくれるため、デメリットはありません。<br>
+      逆に、名前を省略して短くしてしまうと、意味が読み取れなくなってしまい、読みづらいプログラムになってしまいます。基本的に名前を省略するのはやめましょう。<br>
+      例外として、もはや一般的となった略称だったり、極めて一時的な変数なのであれば、短い名前にしても良いでしょう。</p>
+    <p><br>
+    </p>
+    <h1><a id="mozTocId587113" class="mozTocH1"></a>Enumの名前</h1>
+    <p>列挙型の名前はPascal Caseにします。列挙値の名前もPascal Caseにします。</p>
+    <p class="source">public enum <strong>State</strong><br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; <strong>Walk</strong>,<br>
+      &nbsp;&nbsp;&nbsp; <strong>Jump</strong>,<br>
+      &nbsp;&nbsp;&nbsp; <strong>HighJump</strong>,<br>
+      &nbsp;&nbsp;&nbsp; <strong>Damage</strong>,<br>
+      }</p>
+    <p>C++やJavaでは、列挙値を大文字スネークケースにすることが多いですが、C#ではPascal Caseにしましょう。</p>
+    <p>列挙値に列挙型名を含めるのは冗長なのでやめましょう。以下に例を示します。</p>
+    <p class="source">public enum State<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; WalkState,<br>
+      &nbsp;&nbsp;&nbsp; JumpState,<br>
+      &nbsp;&nbsp;&nbsp; HighJumpState,<br>
+      &nbsp;&nbsp;&nbsp; DamageState,<br>
+      }</p>
+    <p>これは冗長なのでやめましょう。<br>
+    </p>
+    <h1><a id="mozTocId39355" class="mozTocH1"></a>定数の名前</h1>
+    <p>定数の名前はPascal Caseにします。</p>
+    <p class="source">public const int <strong>SampleConstantVariable</strong> = 100;</p>
+    <p>C++やJavaでは、大文字スネークケースにすることが多いですが、C#ではPascal Caseにしましょう。</p>
+    <p class="column">C#ではほとんど見かけませんが、稀に定数を「k」から始める派閥があります（Unityの中のソースコードにもちょいちょいある…）。<br>
+      kはドイツ語で定数を意味する<code>konstant</code>の頭文字らしいです。<br>
+      <br>
+      例：<br>
+      public const int kSampleConstantVariable = 100;</p>
+    <p><br>
+    </p>
+    <h1><a id="mozTocId471275" class="mozTocH1"></a>まとめ</h1>
+    <p>C#でプログラミングを行う際は、以上の方針を守りましょう。フィールドの名前付けは色んな派閥があるので、チームの方針に従いましょう。</p>
+    <p>命名規則に則るということは、最低限のルールを守ることです。重要なことですが、それだけでは、イケてる名前にはなりません。イケてる名前を付けてあげるには、以下の書籍がきっと役に立つでしょう。オススメです。これを読んだうえで就活作品を作ると、とても良いでしょう。</p>
+    <a href="https://www.amazon.co.jp/dp/4873115655"><img src="image/readablecode.jpg"
+        alt=""></a>
+    <p><a href="https://www.amazon.co.jp/dp/4873115655">https://www.amazon.co.jp/dp/4873115655</a></p>
+    <p><br>
+    </p>
+    <p><br>
+    </p>
+  </body>
+</html>
