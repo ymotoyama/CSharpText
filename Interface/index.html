@@ -60,6 +60,7 @@
       {<br>
       &nbsp;&nbsp;&nbsp; 戻り値型 メソッド名(引数型 引数名, ...);<br>
       }</p>
+    <p> </p>
     <br>
     <p>具体的には次のようになります：</p>
     <p class="source">interface ISampleInterface<br>
@@ -67,6 +68,8 @@
       &nbsp;&nbsp;&nbsp; void Hoge();<br>
       }</p>
     <p>インターフェース名は <code>I</code> から始めるのが慣例です。</p>
+    <p><strong>インターフェースでは、メソッドはシグネチャのみ定義し、実装（処理）は書きません（書けません※）</strong>。抽象クラスの抽象メソッドと同様です。<br>
+      ※2019年にリリースされたC#8.0から、インターフェースにも実装を書けるようになりましたが、基本的な使い方としては、実装は書きません。</p>
     <p><br>
     </p>
     <h3>インターフェースの実装</h3>
@@ -322,7 +325,7 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
       &nbsp;&nbsp;&nbsp; }<br>
       }</p>
-    <p>ショボいサンプルですが勘弁してください…普通はアイテムは配列などで保持するべきですが、話を単純にするために、<code>string</code>の変数4個にしました。</p>
+    <p>ショボいサンプルですが勘弁してください…普通はアイテムは配列やリストで保持するべきですが、話を単純にするために、<code>string</code>の変数4個にしました。</p>
     <p><code>Bag</code>の中には道具が4つ入れられるという仕様です。ここで、道具の一覧を<code>foreach</code>で列挙できたら便利だなと思って上記のようなコードを書いたものの、上記はコンパイルエラーとなります（CS1579&nbsp;&nbsp; &nbsp;foreach ステートメントは、'Bag' が 'GetEnumerator' のパブリック インスタンス定義を含んでいないため、型 'Bag' の変数に対して使用できません）。</p>
     <p><code>foreach</code>は、<code>IEnumerable</code>インターフェースを実装し、<code>GetEnumerator()</code>メソッドを実装するクラスだけが対象となるのです。</p>
     <p><code>GetEnumerator()</code>は<code>IEnumerator</code>インターフェースを実装したオブジェクトを返却するメソッドです。<code>IEnumerator</code>は、C++でいうところの<strong>イテレーター</strong>です。列挙可能なオブジェクトの、「今どこを指しているのか」、「次の項目を指す」、「指している項目を取得する」などの機能を提供します。具体的に言うと、次の機能を実装しなければなりません：</p>
