@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE">
+    <title>C# ジェネリック</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <p class="title">C# ジェネリック</p>
+    <br>
+    <ol id="mozToc">
+      <!--mozToc h1 1 h2 2-->
+      <li><a href="#mozTocId735440">ジェネリックとは</a></li>
+      <li><a href="#mozTocId335938">具体例</a></li>
+      <li><a href="#mozTocId520813">複数の型パラメーター</a></li>
+      <li><a href="#mozTocId48757">ジェネリックメソッド</a></li>
+      <li><a href="#mozTocId882354">ジェネリック型制約</a>
+        <ol>
+          <li><a href="#mozTocId425500">ジェネリックメソッドの型制約</a></li>
+          <li><a href="#mozTocId99080">標準のMax()関数の実装</a></li>
+          <li><a href="#mozTocId69604">ジェネリッククラスの型制約</a></li>
+          <li><a href="#mozTocId697030">いろいろな制約</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId557065">ジェネリックの使いどころ</a></li>
+    </ol>
+    <h1><a id="mozTocId735440" class="mozTocH1"></a>ジェネリックとは</h1>
+    <p>C#やJavaなどには<strong>ジェネリック</strong>という仕組みがあります。これは、型を後から注入することによって、いろいろな型を操作できるコードを書く仕組みです。</p>
+    <p>例えば、C#標準ライブラリの<code>List</code>クラスなどは、int型やstring型や自作のクラスまで、どんな型でも格納できますが、これはジェネリックによって実現されています。</p>
+    <p>C++のテンプレートとほぼ同じ機能だと思って良いでしょう（※細かい部分での違いはありますが）。</p>
+    <h1><a id="mozTocId335938" class="mozTocH1"></a>具体例</h1>
+    <p>次のようなクラス<code>IntBox</code>があったとします：</p>
+    <p class="source"><span style="color: #219a43;">// int型の値を格納できるクラス</span><br>
+      class IntBox<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public int value;<br>
+      }</p>
+    <p>int型の変数を格納できるクラスです。<br>
+      （※説明のために極めて簡潔なクラスにしてあり、実用性は皆無なので、そこにツッコミを入れないように）</p>
+    <p><br>
+    </p>
+    <p>同様に、float型の変数を格納できるクラスが必要になり、次のようなクラスを作りました：</p>
+    <p class="source"><span style="color: #219a43;">// float型の値を格納できるクラス</span><br>
+      class FloatBox<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public float value;<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>さらに他の型に対応したクラスも必要になったらどうしますか？</p>
+    <p>まあ、対応すべき型の数が限られていたりする場合は、上記と同様に、量産すれば良いですが、以下のような場合はそうもいきません：</p>
+    <ul>
+      <li>対応すべき型の数が膨大である</li>
+      <li>処理が多い、または複雑である（量産する際のミス、修正する際のミスのおそれが高まる）</li>
+      <li><b>未知の型（ユーザーが定義した型）に対応する必要がある</b></li>
+    </ul>
+    <p>特に、最後のケースなどは、対応しようがありません。まだ存在しない型のためのクラスをあらかじめ作れるわけがありません。</p>
+    <p><br>
+    </p>
+    <p>そのため、昔のC#やJavaでは、未知の型に対応するためには、object型を使っていました。</p>
+    <p class="source"><span style="color: #219a43;">// どんな型でも格納できるクラス</span><br>
+      class AnyBox<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public <strong>object</strong> value;<br>
+      }</p>
+    <p><strong>object型は、全ての型の基底の型です</strong>。<strong>全ての型はobject型にキャストしたり、元の型に戻したりすることができます</strong>。そのため、次のようなコードを書くことができます：</p>
+    <p class="source">static void Main(string[] args)<br>
+      {<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // 何でも入る箱を作る</span><br>
+      &nbsp;&nbsp;&nbsp; AnyBox box = new AnyBox();<br>
+      <br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // 箱に 整数100 を代入</span><br>
+      &nbsp;&nbsp;&nbsp; box.value = 100;<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // 箱から取り出す。このとき、valueはobject型なので、キャストが必要。</span><br>
+      &nbsp;&nbsp;&nbsp; int a = (int)box.value;<br>
+      <br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // 箱に 文字列"Hello" を代入</span><br>
+      &nbsp;&nbsp;&nbsp; box.value = "Hello";<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // 箱から取り出す。このとき、valueはobject型なので、キャストが必要。</span><br>
+      &nbsp;&nbsp;&nbsp; string s = (string)box.value;<br>
+      }</p>
+    <p>…とまあ、このようにobject型を使えば、どのような型も扱うクラスが作れるのですが、次のような欠点があります：</p>
+    <ul>
+      <li>キャストが必要で煩雑</li>
+      <li>キャストを間違えると実行時エラーになる</li>
+    </ul>
+    <p>両方イヤですが、特に2つ目の欠点が辛いです。次のようなコードを書くと、コンパイルは成功するのに、実行したときにエラーになってしまうのです：</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 何でも入る箱を作る</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AnyBox box = new AnyBox();<br>
+      <br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 箱に 整数100 を代入</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; box.value = 100;<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 中身は int型 なのに、string型 にキャスト → 実行時エラー</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; string s = (string)box.value;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>プログラムのミスはコンパイル時に検出されるのが静的型付け言語の利点であるのに、その利点が失われてしまっています。</p>
+    <p><br>
+    </p>
+    <p>この不便さを解決するのがジェネリックという機能です。</p>
+    ジェネリックを使うと、上記のクラスは次のようになります：
+    <p class="source"><span style="color: #219a43;">// どんな型でも格納できるクラス</span><br>
+      class AnyBox<strong>&lt;T&gt;</strong><br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public <strong>T</strong> value;<br>
+      }</p>
+    <p>黄色く強調した部分がジェネリックの特徴です。クラス名の右に<code>&lt;型パラメーター名&gt;</code>とします。型パラメーター名は任意の文字列を指定可能ですがTとするのが一般的です（おそらく"Type"の略）。このようにして定義したジェネリッククラスの内部では、型パラメーター名を型のように扱うことができます。上記のコードであれば、あたかもTという型が存在するかのようなコードを書くことができます。</p>
+    <p><br>
+    </p>
+    <p>このクラスを使うときは、次のようにします：</p>
+    <p class="source">static void Main(string[] args)<br>
+      {<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // int型 を格納するための箱を作る</span><br>
+      &nbsp;&nbsp;&nbsp; AnyBox<strong>&lt;int&gt;</strong> intBox = new AnyBox<strong>&lt;int&gt;</strong>();<br>
+      <br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // 箱に 整数100 を代入</span><br>
+      &nbsp;&nbsp;&nbsp; intBox.value = 100;<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // 箱から取り出す。このとき、キャストは不要</span><br>
+      &nbsp;&nbsp;&nbsp; int a = intBox.value;<br>
+      <br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // これはコンパイルエラーとなる</span><br>
+      &nbsp;&nbsp;&nbsp; string s = (string)intBox.value;<br>
+      }</p>
+    <p>黄色く強調した部分がポイントです。ジェネリッククラスを使うときは、型パラメーターの部分に実際に存在する型を指定します。すると、指定した型で型パラメーターの部分が置き換えられます（上記の例でいうと、AnyBoxクラス内のTの部分がintに置き換わるイメージ）。</p>
+    <p><br>
+    </p>
+    <p class="column"><b>ジェネリックの無かった時代</b><br>
+      <br>
+      強力なジェネリック機能ですが、C#やJavaに始めから存在していたわけではなく、どちらの言語においても、途中から追加されたものです。<br>
+      初期のC#やJavaにはジェネリックが無かったため、コンテナークラスが扱えるのはobject型のみであり、値を取り出すたびにキャストが必要でした…（黒歴史）。<br>
+      <br>
+      C#では、そのときの名残りとして、object型として内容を格納するArrayListクラスがあったり、ジェネリック版のIComparableと非ジェネリック版のIComparableがあったりします。それらは過去のソースコードとの互換性のためだけに残されているものであり、今から新たに利用することはないでしょう。</p>
+    <p> </p>
+    <br>
+    <h1><a id="mozTocId520813" class="mozTocH1"></a>複数の型パラメーター</h1>
+    <p>型パラメーターは2つ以上定義することもできます。</p>
+    <p>例：</p>
+    <p class="source">class LargeBox&lt;T1, T2&gt;<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public T1 value1;<br>
+      &nbsp;&nbsp;&nbsp; public T2 value2;<br>
+      }</p>
+    <p>型パラメーターが2つ以上ある場合は、型パラメーター名が1文字だとさすがにわかりづらいので、2文字以上でわかりやすい名前を付けることが多いです。</p>
+    <p><br>
+    </p>
+    <p>よく使われるクラスの中で、複数の型パラメーターを持つものの例としては、<code>Dictionary</code>クラスが挙げられます：</p>
+    <p class="source">public class Dictionary&lt;<strong>TKey</strong>, <strong>TValue</strong>&gt;...</p>
+    <p><br>
+    </p>
+    <p>利用時のコードは次のようになります：</p>
+    <p class="source">Dictionary&lt;string, int&gt; d = new Dictionary&lt;string, int&gt;();</p>
+    <p><br>
+    </p>
+    <h1><a id="mozTocId48757" class="mozTocH1"></a>ジェネリックメソッド</h1>
+    <p>ジェネリックなメソッドを作ることもできます。メソッド定義時には型を仮のもの（型パラメーター）にしておき、利用時に実際の型が注入されます。</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// ジェネリックメソッドの定義</span><br>
+      &nbsp;&nbsp;&nbsp; static void Hoge&lt;T&gt;(T a)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("渡された型は" + typeof(T));<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// ジェネリックメソッドの呼び出し</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hoge&lt;int&gt;(100);<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 引数の型から、型パラメーターが自明のときは、型パラメーターを省略可能<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // <b>省略できるときは省略するのが普通です</b></span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hoge(100);<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>Unityの<code>GetComponent</code>などは、ジェネリックメソッドです。</p>
+    <p class="source"><span style="color: #219a43;">// 引数が無いので、型パラメーターで型を渡す必要がある</span><br>
+      Rigidbody rb = GetComponent&lt;Rigidbody&gt;();<br>
+      <br>
+      <span style="color: #219a43;">// ちなみに、上記の書き方は途中からできるようになったものであり、昔のUnityではこう書いていた</span><br>
+      Rigidbody rb = GetComponent(typeof(Rigidbody));</p>
+    <p><br>
+    </p>
+    <h1><a id="mozTocId882354" class="mozTocH1"></a>ジェネリック型制約</h1>
+    <p>前章のジェネリックメソッドを利用して、色んな型に対応した<code>Max()</code>関数を作ってみましょう！<br>
+      <code>Max()</code>関数というのは、引数で数値を2つ受け取り、大きな報を返却するという定番の関数です。</p>
+    <h2><a id="mozTocId425500" class="mozTocH2"></a>ジェネリックメソッドの型制約</h2>
+    <p>例えば、int型にのみ対応した<code>Max()</code>関数は次のようになります：</p>
+    <p class="source">static int Max(int a, int b)<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; return a &gt; b ? a : b;<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>これの<code>float</code>版、<code>double</code>版、<code>long</code>版…などとたくさん作るのはイヤなので、ジェネリックを使って、一度の定義で済ませたいと思います。次のようなコードを書きました：</p>
+    <p class="source">static T Max&lt;T&gt;(T a, T b)<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; return a &gt; b ? a : b;<br>
+      }</p>
+    <p>ところが、<strong>これはコンパイルエラーとなってしまいます</strong>。</p>
+    <p><code>T</code>という型はどんな型にでもなる可能性があるため、比較演算子<code>&gt;</code>が使えないのです。比較できない型が入ってくる可能性があるためです。</p>
+    <p>（C++のテンプレートではこのようなことも可能なのですが…。C++のテンプレートの場合は、比較できない型でこの関数を利用しようとしたときにコンパイルエラーとなります）</p>
+    <p><br>
+    </p>
+    <p>では、どうしたらよいのでしょうか。<br>
+      ここで、<strong>ジェネリック型制約</strong>の出番です。</p>
+    <p>ジェネリック型制約を使うと、型パラメーターが、ある特徴を持つことを強制できます。例えば、次のように書くことで、<code>T</code>は必ず<code>IComparable</code>インターフェースを実装している（つまり比較可能である）ことが保証されます。</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static T Max&lt;T&gt;(T a, T b) <strong>where T : IComparable</strong><br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return a.CompareTo(b) &gt; 0 ? a : b;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// IComparableを実装した型ならMax()が使える</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1, 2)); <span
+        style="color: #219a43;">// int</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1.0f, 0.1f)); <span
+        style="color: #219a43;">// float</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1L, 1234567890123456L)); <span
+        style="color: #219a43;">// long</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max("ABC", "DEF")); <span
+        style="color: #219a43;">// string</span><br>
+      <br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 例えばProgramクラスは比較できないので、以下はコンパイルエラーになる</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Program p1 = new Program();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Program p2 = new Program();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(p1, p2));<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>残念な点としては、相変わらず比較演算子<code>&gt;</code>は使えないので、<code>CompareTo()</code>を使わなければならないという点ですね…。</p>
+    <p>このような感じでいまいちパッとしないジェネリックメソッドの型制約機能です…。賢い人からは「わざわざジェネリック使わんでも次のようにインターフェース使えばええんちゃう？」という意見が出てきそうです：</p>
+    <p class="source">static <strong>IComparable</strong> Max(<strong>IComparable</strong> a, <strong>IComparable</strong> b)<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; return a.CompareTo(b) &gt; 0 ? a : b;<br>
+      }</p>
+    <p>はい、このように、そもそも引数の型をインターフェースにしても、同様に動作します。しかし、ジェネリック版のほうが以下の点で優れています：</p>
+    <ul>
+      <li>値型を比較した際に、少し速い（インターフェースにすると、ボックス化のせいで余計なコストが発生してしまう）</li>
+      <li>戻り値の型が引数の型と同じになる（インターフェースにすると戻り値がIcomparable型になってしまうため、戻り値を受け取った人はキャストをしないと使えない）</li>
+    </ul>
+    <p>というわけで、ジェネリックメソッドおよび型制約にも存在価値はあるのです（自分で定義するようなことは滅多に無いけど…）。</p>
+    <h2><a id="mozTocId99080" class="mozTocH2"></a>標準のMax()関数の実装</h2>
+    <p>ちなみに、実は、C#標準のMathクラスには<code>Max()</code>関数が既に定義されているのですが、その定義がどうなっているのかというと…</p>
+    <p><img src="image/max.png" alt=""></p>
+    <p>型の数だけ定義！ めっちゃ脳筋実装です💪🧠</p>
+    <p>なぜこうなっているのかというと、<code>CompareTo()</code>を使うより比較演算子で比較したほうがわずかですが速いからです。数学的計算は速さが重視されるため、このようになっています。また、未知の型に対応する必要性が低いであろうと考えられるためです。</p>
+    <h2><a id="mozTocId69604" class="mozTocH2"></a>ジェネリッククラスの型制約</h2>
+    <p>ジェネリッククラスに対して型制約を行いたい場合は、次のように記述します：</p>
+    <p class="source">class AnyBox&lt;T&gt;<strong> where T : IComparable</strong><br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public T value;<br>
+      }</p>
+    <h2><a id="mozTocId697030" class="mozTocH2"></a>いろいろな制約</h2>
+    <p>上記までの例では、制約としてインターフェースを指定していますが、それ以外の制約もあります。例えば「クラスである」とか「値型である」とか。<br>
+      例えば、次のように記述することで、型パラメーターにクラスしか指定できなくなります（値型（intやfloatや構造体など）を指定できなくなる）：</p>
+    <p class="source">class AnyBox&lt;T&gt;<strong> where T : class</strong><br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public T value;<br>
+      }</p>
+    <p>詳細は<a href="https://docs.microsoft.com/ja-jp/dotnet/csharp/language-reference/keywords/where-generic-type-constraint">Microsoft公式</a>を参照してください。</p>
+    <h1><a id="mozTocId557065" class="mozTocH1"></a>ジェネリックの使いどころ</h1>
+    <p>ジェネリックは、たくさんの型や未知の型に対して、同じ操作を行いたいという要求を満たすものなので、新たにジェネリッククラスやジェネリックメソッドを定義する必要が出てくるのは次のような状況のときがほとんどです：</p>
+    <ul>
+      <li>コンテナークラス（Listのようなもの）を自作するとき</li>
+      <li>フレームワークやライブラリなどを作るとき</li>
+    </ul>
+    <p>逆に言えば、上記のようなことをしないのであれば、ジェネリッククラスやジェネリックメソッドを定義する機会はほとんどないでしょう。しかし、フレームワークやライブラリによってあらかじめ定義されたジェネリッククラスやジェネリックメソッドを利用する機会は頻繁にあるため、<strong>ジェネリックの原理と使い方を理解しておくことは大切です</strong>。</p>
+    <p><br>
+    </p>
+  </body>
+</html>
