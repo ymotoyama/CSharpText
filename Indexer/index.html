@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE">
+    <title>C# インデクサー</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <p class="title">C# インデクサー</p>
+    <br>
+    <h1>インデクサーとは</h1>
+    <p>インデクサーとは、<code>[]</code>でインデックスを指定する機能を自作クラスに追加するための機能です。</p>
+    <p>例えば、C#の配列では<code>配列変数名[インデックス]</code>とすることで、内容にアクセスできます。</p>
+    <p class="source">int[] array = { 100, 200, 300 };<br>
+      <span style="color: #219a43;">// 1番目の要素に代入</span><br>
+      array[1] = 999;<br>
+      <span style="color: #219a43;">// 2番目の要素を取得</span><br>
+      Console.WriteLine(array[2]);</p>
+    <p><br>
+    </p>
+    <p>このように<code>変数名[インデックス]</code>という記述で内容にアクセスする機能を自作クラスに追加する機能がインデクサーです。</p>
+    <p>C#標準ライブラリの<code>List</code>や<code>Dictionary</code>などは、このインデクサー機能によって、簡単に内容にアクセスできるようになっています。</p>
+    <h1>文法</h1>
+    <p>インデクサーの定義方法は以下のようになります：</p>
+    <p class="source">アクセスレベル 戻り値の型 this[添字の型 添字名]<br>
+      {<br>
+      &nbsp; set<br>
+      &nbsp; {<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // setアクセサ<br>
+        &nbsp;&nbsp;&nbsp; //&nbsp; ここに値の変更時の処理を書く。<br>
+        &nbsp;&nbsp;&nbsp; //&nbsp; value という名前の変数に代入された値が格納される。<br>
+        &nbsp;&nbsp;&nbsp; //&nbsp; 添字が使える以外はプロパティと同じ。</span><br>
+      &nbsp; }<br>
+      &nbsp; get<br>
+      &nbsp; {<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // getアクセサ<br>
+        &nbsp;&nbsp;&nbsp; //&nbsp; ここに値の取得時の処理を書く。<br>
+        &nbsp;&nbsp;&nbsp; //&nbsp; メソッドの場合と同様に、値はreturnキーワードを用いて返す。<br>
+        &nbsp;&nbsp;&nbsp; //&nbsp; こっちも添字が使える以外はプロパティと同じ。</span><br>
+      &nbsp; }<br>
+      }</p>
+    <p>プロパティの定義方法とよく似ています。</p>
+    <p><br>
+    </p>
+    <h1>例</h1>
+    <p>例えば次のように、項目を4つ格納できる<code>Bag</code>クラスがあったとします：</p>
+    <p class="source">class Bag<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public string item0;<br>
+      &nbsp;&nbsp;&nbsp; public string item1;<br>
+      &nbsp;&nbsp;&nbsp; public string item2;<br>
+      &nbsp;&nbsp;&nbsp; public string item3;<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>インデクサーを定義し、各項目（item0～item3）に<code>[インデックス]</code>でアクセスできるようにしてみましょう。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp; class Bag<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; string item0;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; string item1;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; string item2;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; string item3;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string this[int index]<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (index == 0) return item0;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if (index == 1) return item1;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if (index == 2) return item2;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else return item3;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (index == 0) item0 = value;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if (index == 1) item1 = value;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if (index == 2) item2 = value;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else item3 = value;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; class Program<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bag bag = new Bag();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bag[0] = "どうのつるぎ";<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bag[1] = "ぬののふく";<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(bag[0]);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(bag[1]);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }</p>
+    <p><br>
+    </p>
+    <h1>インデックスの型</h1>
+    <p>インデックスの型は<code>int</code>型にすることが多いと思いますが、他の型も指定可能です。例えば<code>string</code>型などもよく使われるでしょう。</p>
+    <p><br>
+    </p>
+  </body>
+</html>
