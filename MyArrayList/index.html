@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE">
+    <title>C# ジェネリック</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <p class="title">C# ジェネリック</p>
+    <p><br>
+    </p>
+    <h1>可変長配列を自作しよう</h1>
+    <p>今まで学んだテクニック（ジェネリック、インデクサー、インターフェース等）を使って、C#で可変長配列を自作しましょう！</p>
+    <p>「可変長配列」とは、長さを変えられる配列（のように外側から見たら振る舞うもの）です。要素数の上限を意識することなく扱える便利な配列です。C#では<code>List</code>、Javaでは<code>ArrayList</code>、C++では<code>std::vector</code>という名前で提供されている機能です。定番のデータ構造です。</p>
+    <p>これに近いものを、自分で作成しましょう！</p>
+    <h1>可変長配列のアルゴリズム</h1>
+    <p>一般的な可変長配列の実装アルゴリズムは次のようになります：</p>
+    <ul>
+      <li>内部的には普通の配列で管理する</li>
+      <li>あらかじめ少し大きめの配列を確保しておく</li>
+      <li>データを格納していき、配列の長さが足りなくなったら、より大きな配列を作成し、中身を丸ごとコピーして移す</li>
+    </ul>
+    <p>以上。シンプルですね！</p>
+    <p>便利な機能とか高速な動きとかを求めると、実装が難しくなりますが、最低限の機能の実装であれば、さほど難しくありません。</p>
+    <p><br>
+    </p>
+    <p><br>
+    </p>
+  </body>
+</html>
