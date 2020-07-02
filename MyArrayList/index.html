@@ -3,32 +3,154 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE">
-    <title>C# ジェネリック</title>
+    <title>C# 可変長配列を自作しよう</title>
     <link rel="stylesheet" href="style.css">
     <style>
       
     </style>
   </head>
   <body>
-    <p class="title">C# ジェネリック</p>
-    <p><br>
-    </p>
-    <h1>可変長配列を自作しよう</h1>
+    <p class="title">C# 可変長配列を自作しよう</p>
+    <ol id="mozToc">
+      <!--mozToc h1 1 h2 2-->
+      <li><a href="#mozTocId20423">可変長配列を自作しよう</a></li>
+      <li><a href="#mozTocId287723">可変長配列のアルゴリズム</a></li>
+      <li><a href="#mozTocId959370">基礎部分の実装</a>
+        <ol>
+          <li><a href="#mozTocId317585">基礎部分の実装</a></li>
+          <li><a href="#mozTocId390113">動作確認</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId722539">改良しよう</a>
+        <ol>
+          <li><a href="#mozTocId970274">ジェネリックにしよう</a></li>
+          <li><a href="#mozTocId526064">インデクサーを追加しよう</a></li>
+          <li><a href="#mozTocId377499">列挙可能にしよう</a></li>
+          <li><a href="#mozTocId638136">指定した値が含まれているか調べる機能を追加しよう</a></li>
+          <li><a href="#mozTocId938709">指定した場所の項目を削除する機能を追加しよう</a></li>
+          <li><a href="#mozTocId175604">指定した場所に項目を挿入する機能を追加しよう</a></li>
+          <li><a href="#mozTocId776473">指定した値と等しい項目を全て削除する機能を追加しよう</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId930784">可変長配列の特徴を考えよう</a></li>
+    </ol>
+    <h1><a id="mozTocId20423" class="mozTocH1"></a>可変長配列を自作しよう</h1>
     <p>今まで学んだテクニック（ジェネリック、インデクサー、インターフェース等）を使って、C#で可変長配列を自作しましょう！</p>
     <p>「可変長配列」とは、長さを変えられる配列（のように外側から見たら振る舞うもの）です。要素数の上限を意識することなく扱える便利な配列です。C#では<code>List</code>、Javaでは<code>ArrayList</code>、C++では<code>std::vector</code>という名前で提供されている機能です。定番のデータ構造です。</p>
     <p>これに近いものを、自分で作成しましょう！</p>
-    <h1>可変長配列のアルゴリズム</h1>
+    <h1><a id="mozTocId287723" class="mozTocH1"></a>可変長配列のアルゴリズム</h1>
     <p>一般的な可変長配列の実装アルゴリズムは次のようになります：</p>
     <ul>
-      <li>内部的には普通の配列で管理する</li>
+      <li>内部的には普通の配列でデータを管理する</li>
       <li>あらかじめ少し大きめの配列を確保しておく</li>
       <li>データを格納していき、配列の長さが足りなくなったら、より大きな配列を作成し、中身を丸ごとコピーして移す</li>
     </ul>
     <p>以上。シンプルですね！</p>
-    <p>便利な機能とか高速な動きとかを求めると、実装が難しくなりますが、最低限の機能の実装であれば、さほど難しくありません。</p>
+    <p>便利な機能や高速な動作などを求めると、実装が難しくなりますが、最低限の機能の実装であれば、さほど難しくありません。</p>
     <p><br>
     </p>
+    <h1><a id="mozTocId959370" class="mozTocH1"></a>基礎部分の実装</h1>
+    <h2><a id="mozTocId317585" class="mozTocH2"></a>基礎部分の実装</h2>
+    <p>では、基礎部分を実装してみましょう。まずは、<code>int</code>型のみを格納できる可変長配列として実装します。</p>
+    <p class="source">using System;<br>
+      <br>
+      namespace XXXXXXXX<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public class MyArrayList<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// このリストに格納されている項目の数（自動実装プロパティ）</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int Count { get; private set; } = 0;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int[] array = new int[4]; // 4という数はテキトー<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 容量を拡張する</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void Expand()<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 2倍の大きさの新しい配列を用意し</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int[] newArray = new int[array.Length * 2];<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 中身をコピーする (コピー元配列, コピー先配列, 要素数)</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Array.Copy(array, newArray, array.Length);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 参照を切り替える</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; array = newArray;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 末尾に項目を追加する</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public void Add(int item)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 要素が配列の末尾にまで到達していたら、配列を拡張する</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (Count == array.Length)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Expand();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; array[Count] = item;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count++;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 指定した場所の項目を取得する</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int At(int index)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return array[index];<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <h2><a id="mozTocId390113" class="mozTocH2"></a>動作確認</h2>
+    <p>作成した<code>MyArrayList</code>クラスの動作確認を行いましょう。少なくとも、5つ以上の項目を格納し、取り出せることを確認しましょう。</p>
+    <h1><a id="mozTocId722539" class="mozTocH1"></a>改良しよう</h1>
+    <h2><a id="mozTocId970274" class="mozTocH2"></a>ジェネリックにしよう</h2>
+    <p>現状の<code>MyArrayList</code>は<code>int</code>型しか格納できません。ジェネリック化して、あらゆる型を格納できるようにしましょう。</p>
+    <h2><a id="mozTocId526064" class="mozTocH2"></a>インデクサーを追加しよう</h2>
+    <p>現状の<code>MyArrayList</code>の中身を取り出すためには、現状、<code>At()</code>メソッドを使う必要があります。できれば、配列と同様に<code>[]</code>でアクセスしたいものです。</p>
+    <p>また、既存の項目を書き換える機能はありません。</p>
+    <p>インデクサーを作って、上記の問題を一気に解決しましょう。インデクサーが完成したら、<code>At()</code>メソッドは削除して構いません。</p>
+    <h2><a id="mozTocId377499" class="mozTocH2"></a>列挙可能にしよう</h2>
+    <p>現状の<code>MyArrayList</code>は<code>foreach</code>で列挙することができません。<code>IEnumerable</code>インターフェースを実装するかイテレーターブロックを使うかして、foreachで列挙可能にしましょう。</p>
+    <h2><a id="mozTocId638136" class="mozTocH2"></a>指定した値が含まれているか調べる機能を追加しよう</h2>
+    <p>指定した値が含まれているかを調べるメソッドを<code>MyArrayList</code>に追加しましょう。</p>
+    <ul>
+      <li>メソッド名は<code>Contains</code>とする</li>
+      <li>引数で内容と同じ型の値を指定する</li>
+      <li>戻り値はbool型とする。指定した値が含まれている場合は<code>true</code>を、そうでなければ<code>false</code>を返却する</li>
+    </ul>
+    <h2><a id="mozTocId938709" class="mozTocH2"></a>指定した場所の項目を削除する機能を追加しよう</h2>
+    <p>要素番号（インデックス）を指定して、その場所の項目を除去するメソッドを<code>MyArrayList</code>に追加しましょう。</p>
+    <ul>
+      <li>メソッド名は<code>RemoveAt</code>とする</li>
+      <li>引数で要素番号を指定する</li>
+    </ul>
+    <h2><a id="mozTocId175604" class="mozTocH2"></a>指定した場所に項目を挿入する機能を追加しよう</h2>
+    <p>指定した場所に項目を挿入するメソッドを<code>MyArrayList</code>に追加しましょう。</p>
+    <ul>
+      <li>メソッド名は<code>Insert</code>とする</li>
+      <li>引数で要素番号と値を指定する</li>
+    </ul>
+    <p>例：<br>
+      {100, 200, 300, 400}という内容の<code>MyArrayList</code>があるとして、<code>Insert(1, 999)</code>とした場合、内容は次のようになる<br>
+      {100, 999, 200, 300, 400}</p>
+    <h2><a id="mozTocId776473" class="mozTocH2"></a>指定した値と等しい項目を全て削除する機能を追加しよう</h2>
+    <p>値を指定して、等しい項目を全て除去するメソッドを<code>MyArrayList</code>に追加しましょう。</p>
+    <ul>
+      <li>メソッド名は<code>RemoveAll</code>とする</li>
+      <li>引数で内容と同じ型の値を指定する</li>
+    </ul>
+    <h1><a id="mozTocId930784" class="mozTocH1"></a>可変長配列の特徴を考えよう</h1>
+    <p>格納した項目数が非常に多いとき、以下の操作のパフォーマンスはどうなるか（時間がかかるか、かからないか）、考えてみましょう。</p>
+    <ul>
+      <li>先頭に項目を挿入する</li>
+      <li>真ん中あたりに項目を挿入する</li>
+      <li>末尾に項目を追加する</li>
+      <li>先頭の項目を削除する</li>
+      <li>真ん中あたりの項目を削除する</li>
+      <li>末尾の項目を削除する</li>
+      <li>ある値が含まれているか検索する</li>
+      <li>ランダムアクセス（ある位置の要素（要素番号はわかっている）を取り出す）</li>
+      <li>メモリの使用量</li>
+    </ul>
     <p><br>
     </p>
+    <p></p>
   </body>
 </html>

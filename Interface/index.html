@@ -32,9 +32,9 @@
           <li><a href="#mozTocId207215">自作のクラスをforeachで列挙する</a></li>
         </ol>
       </li>
-      <li><a href="#mozTocId7770">yield</a>
+      <li><a href="#mozTocId50325">イテレーターブロック</a>
         <ol>
-          <li><a href="#mozTocId985235">yieldを使ってイテレーターを簡単に実装する</a></li>
+          <li><a href="#mozTocId246018">イテレーターブロックによってイテレーターを簡単に実装する</a></li>
           <li><a href="#mozTocId904206">Unityのコルーチン</a></li>
         </ol>
       </li>
@@ -431,9 +431,9 @@
     <p>内部的にはこのようなコードが自動生成されています。ありがとうforeach！</p>
     <p><br>
     </p>
-    <h1><a id="mozTocId7770" class="mozTocH1"></a>yield</h1>
-    <h2><a id="mozTocId985235" class="mozTocH2"></a>yieldを使ってイテレーターを簡単に実装する</h2>
-    <p>ここからはインターフェースの話ではないのですが、<code>GetEnumerator()</code>の話になったので、ついでに<code>yield</code>の話をします。</p>
+    <h1><a id="mozTocId50325" class="mozTocH1"></a>イテレーターブロック</h1>
+    <h2><a id="mozTocId246018" class="mozTocH2"></a>イテレーターブロックによってイテレーターを簡単に実装する</h2>
+    <p>ここからはインターフェースの話ではないのですが、<code>GetEnumerator()</code>の話になったので、ついでに<strong>イテレーターブロック</strong>と<code>yield</code>の話をします。</p>
     <p>上記のようにイテレーターを定義して、<code>GetEnumerator()</code>でイテレーターを返却すれば、<code>foreach</code>で列挙可能となりますが、いかんせんめんどくさいですよね。<code>GetEnumerator()</code>とか<code>Current</code>とかが謎に2つあるのも腹立つし（これは過去のC#との互換性を維持するための負の遺産）。</p>
     <p>そこで、最近のC#では、イテレーターを簡単に定義するための機能が追加されています。それを使うと、上記の<code>Bag</code>クラスは次のようになります：</p>
     <p class="source">&nbsp;&nbsp;&nbsp; class Bag<br>
@@ -452,7 +452,7 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
       &nbsp;&nbsp;&nbsp; }</p>
     <p><code>IEnumerator</code>インターフェースを実装していたときと比べると、楽すぎる…！</p>
-    <p>C#は<code>IEnumerator</code>が戻り値の<code>GetEnumerator()</code>メソッドを作って、内部で<code>yield return</code>すると、自動的にイテレーターを生成してくれて、結局前章と同様のプログラムを自動生成してくれます。</p>
+    <p>C#では、<code>IEnumerator</code>が戻り値の<code>GetEnumerator()</code>メソッドを作って、その内部で<code>yield return</code>すると、自動的にイテレーターを生成してくれて、結局前章と同様のプログラムを自動生成してくれます。これを<strong>イテレーターブロック</strong>といいます。</p>
     <p><code>yield return</code>は前章の「CurrentとMoveNext()が一体になったもの」といったイメージです。</p>
     <h2><a id="mozTocId904206" class="mozTocH2"></a>Unityのコルーチン</h2>
     <p><code>yield</code>という構文は、本来、このようにイテレーターを簡単に定義するためにC#に追加された文法なのですが、Unityではこれをハックし、複数のフレームにまたいだ処理を実現する<strong>コルーチン</strong>という仕組みを実装しています。Unityのコルーチンの仕組みを再現したプログラムが以下になります。きちんと理解すれば、Unityのコルーチンを完全に理解できると思います：</p>
