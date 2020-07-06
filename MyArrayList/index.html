@@ -60,7 +60,8 @@
       &nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// このリストに格納されている項目の数（自動実装プロパティ）</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int Count { get; private set; } = 0;<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int[] array = new int[4]; // 4という数はテキトー<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int[] array = new int[4]; <span
+        style="color: #219a43;">// 4という数はテキトー</span><br>
       <br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 容量を拡張する</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void Expand()<br>
@@ -107,7 +108,7 @@
     <p>また、既存の項目を書き換える機能はありません。</p>
     <p>インデクサーを作って、上記の問題を一気に解決しましょう。インデクサーが完成したら、<code>At()</code>メソッドは削除して構いません。</p>
     <h2><a id="mozTocId377499" class="mozTocH2"></a>列挙可能にしよう</h2>
-    <p>現状の<code>MyArrayList</code>は<code>foreach</code>で列挙することができません。<code>IEnumerable</code>インターフェースを実装するかイテレーターブロックを使うかして、foreachで列挙可能にしましょう。</p>
+    <p>現状の<code>MyArrayList</code>は<code>foreach</code>で列挙することができません。<code>IEnumerable</code>インターフェースを実装するかイテレーターブロックを使うかして、<code>foreach</code>で列挙可能にしましょう。</p>
     <br>
     <ul>
     </ul>
