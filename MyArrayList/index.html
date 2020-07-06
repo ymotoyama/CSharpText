@@ -26,9 +26,9 @@
           <li><a href="#mozTocId970274">ジェネリックにしよう</a></li>
           <li><a href="#mozTocId526064">インデクサーを追加しよう</a></li>
           <li><a href="#mozTocId377499">列挙可能にしよう</a></li>
-          <li><a href="#mozTocId638136">指定した値が含まれているか調べる機能を追加しよう</a></li>
           <li><a href="#mozTocId938709">指定した場所の項目を削除する機能を追加しよう</a></li>
           <li><a href="#mozTocId175604">指定した場所に項目を挿入する機能を追加しよう</a></li>
+          <li><a href="#mozTocId638136">指定した値が含まれているか調べる機能を追加しよう</a></li>
           <li><a href="#mozTocId776473">指定した値と等しい項目を全て削除する機能を追加しよう</a></li>
         </ol>
       </li>
@@ -108,12 +108,8 @@
     <p>インデクサーを作って、上記の問題を一気に解決しましょう。インデクサーが完成したら、<code>At()</code>メソッドは削除して構いません。</p>
     <h2><a id="mozTocId377499" class="mozTocH2"></a>列挙可能にしよう</h2>
     <p>現状の<code>MyArrayList</code>は<code>foreach</code>で列挙することができません。<code>IEnumerable</code>インターフェースを実装するかイテレーターブロックを使うかして、foreachで列挙可能にしましょう。</p>
-    <h2><a id="mozTocId638136" class="mozTocH2"></a>指定した値が含まれているか調べる機能を追加しよう</h2>
-    <p>指定した値が含まれているかを調べるメソッドを<code>MyArrayList</code>に追加しましょう。</p>
+    <br>
     <ul>
-      <li>メソッド名は<code>Contains</code>とする</li>
-      <li>引数で内容と同じ型の値を指定する</li>
-      <li>戻り値はbool型とする。指定した値が含まれている場合は<code>true</code>を、そうでなければ<code>false</code>を返却する</li>
     </ul>
     <h2><a id="mozTocId938709" class="mozTocH2"></a>指定した場所の項目を削除する機能を追加しよう</h2>
     <p>要素番号（インデックス）を指定して、その場所の項目を除去するメソッドを<code>MyArrayList</code>に追加しましょう。</p>
@@ -130,6 +126,15 @@
     <p>例：<br>
       {100, 200, 300, 400}という内容の<code>MyArrayList</code>があるとして、<code>Insert(1, 999)</code>とした場合、内容は次のようになる<br>
       {100, 999, 200, 300, 400}</p>
+    <h2><a id="mozTocId638136" class="mozTocH2"></a>指定した値が含まれているか調べる機能を追加しよう</h2>
+    <p>指定した値が含まれているかを調べるメソッドを<code>MyArrayList</code>に追加しましょう。</p>
+    <ul>
+      <li>メソッド名は<code>Contains</code>とする</li>
+      <li>引数で内容と同じ型の値を指定する</li>
+      <li>戻り値はbool型とする。指定した値が含まれている場合は<code>true</code>を、そうでなければ<code>false</code>を返却する</li>
+    </ul>
+    <p><b><b>💡</b>ヒント</b>：ジェネリックを使っていて型が不確定のとき、<code>==</code>演算子による比較は使えません。<code>Equals()</code>による比較を行いましょう（<code>Equals()</code>メソッドは、あらゆる型が持っています。自身と引数に渡した値が等しければ<code>true</code>、等しくなければ<code>false</code>を返却します）</p>
+    <p></p>
     <h2><a id="mozTocId776473" class="mozTocH2"></a>指定した値と等しい項目を全て削除する機能を追加しよう</h2>
     <p>値を指定して、等しい項目を全て除去するメソッドを<code>MyArrayList</code>に追加しましょう。</p>
     <ul>
