@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE">
+    <title>C# LINQ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <p class="title">C# LINQ</p>
+    <span style="color: #222222;"></span>
+    <h1>LINQとは</h1>
+    <h2>LINQとは</h2>
+    <p>LINQ（リンク）とは、「Language Integrated Query」の略で、日本語にすると「統合言語クエリ」ですが、これは覚えなくて良いです。</p>
+    <p>LINQは、様々な種類のデータ集合に対して、標準化された方法でデータを問い合わせることができるC#の言語機能のことです。「様々な種類のデータ集合」というものの具体例を上げると、データベース、XML、プログラムで生成した配列などです。LINQ登場以前は、データソースの種類に応じた取得方法でデータを取得する必要がありました。例えば：</p>
+    <ul>
+      <li>データベースから目的のデータを取り出すには、SQLというデータベース専用の言語を使う</li>
+      <li>XMLから目的のデータを取り出すには、パース（変換処理）を行う</li>
+      <li>配列から目的のデータを取り出すには、for文でぐるぐる回す</li>
+    </ul>
+    データソースの種類によって、それぞれ全く異なるプログラムを書く必要があったのです。ところが、LINQを使うと、データソースの種類によらず、同じプログラムの書き方ができるのです！（…というのが開発したMicroSoftの売り文句です）<br>
+    <p>実際は、そこまでの理想郷は実現していないような感じですが、しかしLINQが便利であることは、ほぼ満場一致で賛同されているようです。</p>
+    <h2>具体例</h2>
+    <p>LINQの簡単な具体例を見てみましょう。例えば「int型配列の中に偶数がいくつ存在するか数えるプログラム」を、<b>まずはLINQを使わずにやってみます</b>：</p>
+    <p class="source">static void Main(string[] args)<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 適当なint型配列</span><br>
+      &nbsp;&nbsp;&nbsp; int[] array = new int[] { 4, 5, 3, 6, 1, 0, 8, 2, 7, };<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; int count = 0;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; foreach (var item in array)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (item % 2 == 0)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; count++;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; Console.WriteLine(count);<br>
+      }</p>
+    <p>まあ、こんなもんでしょう。</p>
+    <p>これを<b>LINQを使うと、以下のようになります</b>：</p>
+    <p class="source">static void Main(string[] args)<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 適当なint型配列</span><br>
+      &nbsp;&nbsp;&nbsp; int[] array = new int[] { 4, 5, 3, 6, 1, 0, 8, 2, 7, };<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; Console.WriteLine(array.Count(x =&gt; x % 2 == 0));<br>
+      }</p>
+    <p>めちゃくちゃ短くなりました！</p>
+    <p>しかも、単に短くなっただけではなく、LINQには「意図が明確になる」という利点もあります。プログラミングには、「短く書けるけど、読むのが困難なコードになってしまう」というテクニックがけっこうありますが、LINQの場合は、短さと意図の明確さが両立できます。例えば、今回は、<code>Count</code>というメソッドを使っているので、誰が見ても「数を数えたいんだな」というのが一目でわかります（わからないとしたら、修行が足りぬのだ！😤）</p>
+    <h1>二種類の書き方</h1>
+    <p><code>LINQ</code>を使ってプログラムを書くとき、大きく分けて書き方が2種類あります。</p>
+    <ul>
+      <li>メソッド構文</li>
+      <li>クエリ構文</li>
+    </ul>
+    <p>の2つです。メソッド構文は、メソッドを呼び出すことによって処理を実現する、まあ普通な感じのやつです。クエリ構文は、C#なのにSQL風の書き方ができるというなかなかに型破りなやつです。</p>
+    <p>メソッド構文とクエリ構文の例を見てみましょう。int型配列の中から、偶数のみ抜き出して、昇順に並べ替えるという処理をメソッド構文とクエリ構文でやってみます：</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// ただの配列</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int[] array = new int[] { 4, 5, 3, 6, 1, 0, 8, 2, 7, };<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// <b>メソッド構文</b>でのLINQ例</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var result = array.Where(x =&gt; x % 2 == 0).OrderBy(x =&gt; x);<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var item in result)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(item);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// <b>クエリ構文</b>でのLINQ例</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var result2 = from x in array<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where x % 2 == 0<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; orderby x<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; select x;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var item in result2)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(item);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>正直なところ、クエリ構文にはほとんどメリットが見出だせないし、使っている人も見たこと無いので、この資料では、クエリ構文については今後一切触れません。</p>
+    <p>クエリ構文…そんなものは無かった、良いね？😇</p>
+    <p><br>
+    </p>
+    <h1>LINQの対象</h1>
+    <p>LINQで使えるメソッド（前章で使った<code>Where</code>や<code>OrderBy</code>など）は、<strong>IEnumerableインターフェースへの拡張メソッドとして実装されています</strong>。つまり、IEnumerableインターフェースを実装したオブジェクトであれば、LINQの機能が使えるということです。C#では、配列やListなど、ほとんどのデータ集合がIEnumerableインターフェースを実装しているので、つまり、<strong>ほとんどのデータ集合に対してLINQが使える</strong>ということです。</p>
+    <p><br>
+    </p>
+    <h1>名前空間</h1>
+    <p>LINQ関連のメソッドは<code>System.Linq</code>名前空間に定義されているため、using宣言が必要なので注意しましょう。</p>
+    <p class="source">using System.Linq;</p>
+    <p>VisualStudioで新規コンソールアプリケーションを作ったときは、デフォルトで書いてありますが、例えばUnityでプログラムを書いているときなどは、自分で追加する必要があります。</p>
+    <p><br>
+    </p>
+    <h1>動作確認の準備</h1>
+    <p>では、いよいよ動作確認しながら数々のLINQの機能を見ていきますが、LINQの動作確認をするためにはデータ集合が必要なので、あらかじめ、次のようなプログラムを用意しておきましょう：</p>
+    <p class="source">using System;<br>
+      using System.Collections.Generic;<br>
+      using System.Linq;<br>
+      <br>
+      namespace LinqSample<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public class Character<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string Name { get; set; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int Level { get; set; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int Hp { get; set; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public Character(string name, int level, int hp)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name = name;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Level = level;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hp = hp;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public override string ToString()<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return $"{Name} LV:{Level} HP:{Hp}";<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; class Program<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; List&lt;Character&gt; characters = new List&lt;Character&gt;();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("原田", 50, 850));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("大圖", 99, 600));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("吉冨", 43, 700));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("山本", 65, 400));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("川上", 20, 300));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("本山", 20, 200));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("関戸", 20, 500));<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// この下で動作確認する</span><br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <h1>Where　抽出</h1>
+    <p><code>Where</code>は条件に該当する項目のみを抽出した新しいデータ集合を返却します。条件はラムダ式で書きます。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Levelが50以上の項目のみ抽出する"); <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var levelHigherThan50 = characters.Where(c =&gt; c.Level &gt;= 50);<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var c in levelHigherThan50)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+    <p>LINQの注意点として「<strong>元のデータ集合を変更するわけではない</strong>」という点が挙げられます。上記のサンプルコードでは、charactersからLevelが50以上の項目が抽出された新しいデータ集合（IEnumarable型）が作られます。元のcharactersは何ら変わっていません。</p>
+    <h1>OrderBy, ThenBy　並び替え</h1>
+    <p><code>OrderBy</code>を使うと、指定した条件で項目を並び替えます。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Levelの昇順でソート");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var orderByLevel = characters.OrderBy(c =&gt; c.Level);<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var c in orderByLevel)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+    <p>上記の例だと、レベルの昇順でソートされます。レベルが同じ項目同士について、さらに追加の条件で並び替えたいような場合は、<code>ThenBy</code>を使います。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Levelの昇順でソート。Levelが同じならHPの昇順でソート");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var orderByLevelAndHp = characters.OrderBy(c =&gt; c.Level).ThenBy(c =&gt; c.Hp);<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var c in orderByLevelAndHp)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+    <p><code>ThenBy</code>の後に続けてさらに<code>ThenBy</code>を行うことも可能です。</p>
+    <p><br>
+    </p>
+    <p>もし<b>降順</b>（大きい順）にソートしたい場合は、<code>OrderBy</code>の代わりに<code>OrderByDescending</code>を、<code>ThenBy</code>の代わりに<code>ThenByDescending</code>を使います。</p>
+    <h1>Select　射影、マッピング</h1>
+    <p>SQLを知っているとわかりやすいかもしれませんが、なかなか理解しづらいのがこの<code>Select</code>です。データ集合の一部（一部の行という意味ではなく、一部の列という意味）を抜き出して新しいデータ集合を作ります。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("名前だけを抽出した集合を作る");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var names = characters.Select(c =&gt; c.Name);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var name in names)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(name);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+    <p><br>
+    </p>
+    <p>加工した結果を用いて集合を作ることも可能です。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("LevelとHPをかけた値の集合を作る");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var multiplyLevelByHp = characters.Select(c =&gt; c.Level * c.Hp);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var item in multiplyLevelByHp)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(item);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+    <h1>Any　条件を満たす要素があるか？</h1>
+    <p>指定した条件を満たす要素が1つでも含まれているかどうかを調べるのが<code>Any</code>です。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Nameが上川という項目が含まれているか？");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(characters.Any(c =&gt; c.Name == "上川"));</p>
+    <h1>All　全ての項目が条件を満たすか？</h1>
+    <p>全ての項目が指定した条件を満たすかどうか調べるのが<code>All</code>です。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("全キャラクターのHPが200以上であるか？");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(characters.All(c=&gt;c.Hp &gt;= 200));</p>
+    <p>同様のことをLINQを使わずに実現しようとすると、最低でも4行程度にはなってしまうので、これはとてもありがたいですね。</p>
+    <p>ゲーム制作でもわりと使う気がします。例えば、「全てのスイッチが押されたか？」「キャラクターが全員死んだか？」などのような感じで。</p>
+    <h1>Count　条件を満たす要素が何個あるか数える</h1>
+    <p><code>Count</code>を使うと、指定の条件を満たす項目が何個あるかを一発で取得できます。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Levelが50以上のキャラクターが何人いるか数える");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(characters.Count(c =&gt; c.Level &gt;= 50));</p>
+    <h1>Min, Max　最小値, 最大値</h1>
+    <p><code>Min</code>を使うと最小値、<code>Max</code>を使うと最大値が取得できます。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("最小レベルは" + characters.Min(c =&gt; c.Level));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("最大レベルは" + characters.Max(c =&gt; c.Level));</p>
+    <p>正直、使えそうで使えない機能なんじゃないかと思います。ゲーム制作では「最小値」や「最大値」そのものが必要な場合より、「最小値を持つキャラクター」や「最大値を持つキャラクター」などが必要になることが多いと思うので。それを実現するための方法は後述します。</p>
+    <h1>Take　先頭から指定した個数取り出す</h1>
+    <p>Takeを使うと、先頭から指定した個数だけ項目を取り出します。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("先頭から2つだけ取り出す");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var take2 = characters.Take(2);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var c in take2)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+    <p>ゲーム制作では、たまに使うかなって感じです。「先頭から3体までにダメージを与える」みたいな感じで。</p>
+    <h1>組み合わせる</h1>
+    <p>これまでに紹介したLINQの機能は、ほとんど全てが、組み合わせて使うことができます。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Levelが50以上のキャラクターをHP降順で並べる");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var result = characters.Where(c =&gt; c.Level &gt;= 50).OrderByDescending(c =&gt; c.Hp);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var c in result)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+    <h1>Aggregate　集積, 集計</h1>
+    <p><code>Aggregate</code>メソッドは相当万能なのですが、使い方が少し難しいです。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Aggregateを使って、最もレベルが高いキャラクターを調べる");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var highest = characters.Aggregate((c1, c2) =&gt; c1.Level &gt;= c2.Level ? c1 : c2);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(highest);</p>
+    <p>0番目の項目と1番目の項目が、ラムダ式の引数として渡されてきます。それを材料にして、同じ型のオブジェクトを返却します。すると、次は、ラムダ式が返却したものと2番目の項目がラムダ式の引数で渡されてくるので、前回と同様に計算や判定を行い、結果を返却します。次は、ラムダ式が返却した結果と3番目の項目がラムダ式の引数で渡されてきます。これを最後の項目まで繰り返します。</p>
+    <h1>OrderByを使って最小/最大の項目を得る</h1>
+    <p>前章のAggregateはやや難しいです。<code>OrderBy</code>/<code>OrderByDescending</code>と<code>First</code>を組み合わせることで、簡単に最小/最大の値を持つ項目が得られます。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("OrderByDescendingを使って最もレベルが高いキャラクターを調べる");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var highest2 = characters.OrderByDescending(c =&gt; c.Level).First();<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(highest2);</p>
+    <p><code>First</code>は先頭の項目を取得するメソッドです。 <code>Aggregate</code>を使ったコードより簡単で読みやすいと思います。</p>
+    <p>ただ、項目数が少ない場合はこの書き方でも問題無いと思いますが、項目数が多い場合は、パフォーマンスが悪化します。<code>Aggregate</code>の場合は、全項目を一周舐めるだけで処理が終わりますが、<code>OrderBy</code>は全項目のソートなので、項目数が多い場合は、無駄な並び替えがパフォーマンスを悪化させます（最大または最小が決まれば良いだけなのに、それ以外の全ての項目も並べ替えるため）。</p>
+    <p>なお、<code>First</code>は、項目が存在しない場合は例外が発生するので、項目が存在しない可能性がある場合は、事前に個数をチェックするか、<code>FirstOrDefault</code>を使ってください。FirstOrDefaultは、項目が存在しない場合は、既定値（intやfloatなら0、参照型ならnull）が返却されます。</p>
+    <h1>練習問題</h1>
+    <h2>　</h2>
+    <p>LINQを使って、HPが500以下のキャラクターの集合を作成し、コンソールに出力してください。</p>
+    <h2>　</h2>
+    <p>LINQを使って、HPが多いキャラクタートップ3の集合を作り、コンソールに出力してください。</p>
+    <h2>　</h2>
+    <p>LINQを使って、全員が次の2つの条件を満たしているかを調べてください。</p>
+    <ul>
+      <li>Levelが20以上</li>
+      <li>HPが200以上</li>
+    </ul>
+    <p>全員が2つの条件を満たしていたら<code>True</code>、そうでなければ<code>False</code>をコンソールに出力してください。</p>
+    <h2>　</h2>
+    <p>LINQの<code>Aggregate</code>を使って、HPが最も少ないキャラクターを選び、コンソールに出力してください。</p>
+    <h2>　</h2>
+    <p>以下のようなint型配列がある：</p>
+    <p class="source">int[] array = { 2, 3, 4, 5, 6 };</p>
+    <p>LINQの<code>Aggregate</code>を使って、全ての要素を掛け合わせ（2 * 3 * 4 * 5 * 6）、結果をコンソールに出力してください。</p>
+    <p>期待する出力結果：</p>
+    <p class="console">720</p>
+    <p><br>
+    </p>
+    <p></p>
+  </body>
+</html>
