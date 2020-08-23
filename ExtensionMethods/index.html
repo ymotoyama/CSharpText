@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE">
+    <title>C# 拡張メソッド</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <p class="title">C# 拡張メソッド</p>
+    <h1>拡張メソッドとは</h1>
+    <p>C#には<strong>拡張メソッド</strong>という機能があります。拡張メソッドとは、静的メソッドをインスタンスメソッドと同じ形式で呼び出せるようにできる機能です。…はて、どういうことでしょうか？</p>
+    <p>拡張メソッドという機能を使わない場合、ある型のオブジェクトに対して何か操作を行うメソッドを作りたければ、大抵、ユーティリティクラスを作り、staticメソッドで実装します。例えば、int型の変数を2倍する関数を作らなければならない場合、次のようにするでしょう。</p>
+    <p>まず、クラスとメソッドを定義します：</p>
+    <p class="source">public static class Util<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public static int Nibai(int value)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return value * 2;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>次に、呼び出して使います：</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<em>Util.Nibai(100)</em>);<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>操作対象の型が自作のクラスであれば、そのクラス自体に「2倍にするメソッド」の定義を追加すれば良いのですが、int型は既存のクラスなので、改造できません。よって、このようにするしかありません。</p>
+    <p>しかし、<strong>拡張メソッドを使うと、あたかも既存のクラスにインスタンスメソッドを追加するようなことが実現できます</strong>。</p>
+    <p>次のようになります。まず、拡張メソッドを定義します：</p>
+    <p class="source">public <em>static</em> class Util<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public static int Nibai(<em>this</em> int value)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return value * 2;<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>普通にstaticメソッドを実装するのと似ていますが、引数に<code>this</code>キーワードが付いているのがポイントです。</p>
+    <p>呼び出し側のコードは次のようになります：</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<em>100.Nibai()</em>);<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>あたかも、int型に<code>Nibai</code>というインスタンスメソッドが存在するかのような記述で呼び出すことが可能です。呼ぶ側では引数を与えていませんが、呼ばれた<code>Nibai</code>メソッドのほうでは、呼ぶのに使ったインスタンス（今回は<code>100</code>）が第1引数で入ってきます。</p>
+    <p><br>
+    </p>
+    <h1>拡張メソッドの構文</h1>
+    <ul>
+      <li><strong>staticメソッドとして定義</strong>する。</li>
+      <li>定義する場所（どのクラス内に記述するか）は、どこでも良い。大抵はユーティリティクラスか、XXXExtensions（例：int型ならIntExtensions）などという名前のクラスを作って、そこに定義にする。ただし、そのクラスは<strong>staticクラスでなければならない</strong>。</li>
+      <li><strong>第1引数を操作対象のものにする。それにthisキーワードを付ける</strong>。</li>
+      <li>メソッドの実行に引数が必要な場合は、第2引数以降も使える。第2引数を定義した場合、それは呼び出し時の第1引数を意味する。第3引数を定義した場合、それは呼び出し時の第2引数となる。以下同様。</li>
+    </ul>
+    <br>
+    <h1>練習問題</h1>
+    <h2>　</h2>
+    <p>int型に、3倍の値を出力する拡張メソッド<code>Sanbai</code>を実装してください。以下のように呼び出して使うものとします：</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<em>100.Sanbai()</em>);<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>期待する出力結果：</p>
+    <p class="console">300</p>
+    <h2>　</h2>
+    <p>int型に、偶数かどうかを判定する拡張メソッド<code>IsEvenNumber</code>を実装してください。以下のように呼び出して使うものとします：</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.Write("数を入力してください：");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int input = int.Parse(Console.ReadLine());<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (input.IsEvenNumber())<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("偶数です。");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("奇数です。");<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <h2>&nbsp;</h2>
+    <p>float型に、度数法をラジアンに変換する拡張メソッド<code>Deg2Rad</code>を実装してください。以下のように呼び出して使うものとします：</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<em>360f.Deg2Rad()</em>);<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>期待する出力結果：</p>
+    <p class="console">6.283185</p>
+    <p>ヒント：度をπ/180倍すれば、ラジアンになります。</p>
+    <h2>　</h2>
+    <p>次のプログラムは、入力された整数値を3倍してからコンソールに出力するプログラムです。正しく動作するように、拡張メソッド<code>ToInt</code>と<code>Output</code>を定義してください。</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.ReadLine().ToInt().Sanbai().ToString().Output();<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>期待する動作：</p>
+    <p class="console">100 <span style="color: #009900;">←入力</span><br>
+      200 <span style="color: #009900;">←出力</span></p>
+    <p>ヒント：拡張メソッド<code>Output</code>の中では単純に<code>Console.WriteLine()</code>を呼び出してください。戻り値は無し（void）です。</p>
+    <h2>　</h2>
+    <p>次のプログラムは、入力された文字列を5回繰り返して出力するプログラムです。正しく動作するように、拡張メソッド<code>Repeat</code>を定義してください。</p>
+    <p class="source">class Program<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.ReadLine().Repeat(5).Output();<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>期待する動作：</p>
+    <p class="console">オラ <span style="color: #009900;">←入力</span><br>
+      オラオラオラオラオラ <span style="color: #009900;">←出力</span></p>
+    <p><br>
+    </p>
+    <h1>拡張メソッドの注意点</h1>
+    <p>拡張メソッドを使うと、「あたかも既存のクラスにインスタンスメソッドを追加するようなことが実現できる」のですが、実際にインスタンスメソッドが追加されたわけではなく、実際に追加されたのはStaticメソッドです。<strong>Staticメソッドをインスタンスメソッドのような書き方で呼び出すことができるだけ</strong>です。なので、<strong>overrideして派生クラスによって振る舞いを変えるようなことはできません</strong>。</p>
+    <p>また、<strong>同じシグネチャ（名前と引数リスト）のインスタンスメソッドを作れてしまいます</strong>。例えば、同じシグネチャのインスタンスメソッドを複数作ることはできませんが、インスタンスメソッドと拡張メソッドの場合、同じシグネチャで作れてしまいます。ビルドエラーにはなりません。このとき、実行されるのはインスタンスメソッドとなります。なので、既に存在するインスタンスメソッドと同じシグネチャの拡張メソッドをうっかり作ってしまい、「あれぇ？呼ばれないなぁ…」ということもありえますし、逆に、先に拡張メソッドを作っていて正常に動いていたのに、後でクラスのほうが改修されて、同じシグネチャのインスタンスメソッドが追加されてしまい、今まで動いていた部分が突然動かなくなる、という可能性もあります。</p>
+    <p>基本的に、やりたいことがインスタンスメソッドと拡張メソッドのどちらでも実現できるのであれば、インスタンスメソッドで実装しましょう。既存のクラスなので改造できない、かつ、インスタンスメソッドのように呼び出せたほうが明らかに利便性が高まるという場合にのみ、拡張メソッドを使います。</p>
+    <h1>拡張メソッドの使いどころ</h1>
+    <ul>
+      <li>C#のプリミティブなクラスに対して、よく使う操作を追加する。</li>
+      <li>使っているライブラリやフレームワークに対して、よく使う操作を追加する</li>
+      <ul>
+        <li>実例：DotTweenやUniRxといったライブラリは、UnityのGameObjectクラスに拡張メソッドを追加している</li>
+      </ul>
+      <li>インターフェースにメソッドの実装を追加する（通常、インターフェースにはメソッドのシグネチャを定義できるのみで、処理は書けないが、拡張メソッドを使うと処理を書くことができる）</li>
+      <ul>
+        <li>実例：LINQ</li>
+      </ul>
+    </ul>
+    <p><br>
+    </p>
+    <p></p>
+  </body>
+</html>
