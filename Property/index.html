@@ -47,8 +47,7 @@
     <h2><a id="mozTocId599106" class="mozTocH2"></a>カプセル化</h2>
     <p>オブジェクト指向プログラミングにおいては、基本的に、クラスの情報はクラスの内部に隠蔽し、外部からはアクセスできないようにします。これにより、クラス利用者はクラスの内部実装を熟知する必要が無くなるし、クラスの実装に変更があっても、クラス利用者には影響が及ばないのです。</p>
     <p>この考え方を<strong>カプセル化</strong>と言います。</p>
-    <p>
-    </p>
+    <p> </p>
     <h2><a id="mozTocId193286" class="mozTocH2"></a>アクセサーとは？</h2>
     <p>基本的に情報はクラス内部に隠蔽するといっても、やはり外部からアクセスする必要がある変数は必ずあります。そのときに、単純に変数のアクセスレベルを<code>public</code>にするのではなく、変数にアクセスするためのメソッドを用意し、利用者にはそれを通じてアクセスしてもらうということをよくやります。</p>
     <p class="source">class Character<br>
@@ -89,11 +88,11 @@
       {<br>
       &nbsp;&nbsp;&nbsp; get<br>
       &nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // getterの処理。値をreturnする。<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// getterの処理。値をreturnする。</span><br>
       &nbsp;&nbsp;&nbsp; }<br>
       &nbsp;&nbsp;&nbsp; set<br>
       &nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // setterの処理。代入された値が一時変数valueに入ってくる。<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// setterの処理。代入された値が一時変数valueに入ってくる。</span><br>
       &nbsp;&nbsp;&nbsp; }<br>
       }</p>
     <p><br>
@@ -155,11 +154,11 @@
       &nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Character c = new Character();<br>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 値を設定するときは、変数に代入するのと同様の書き方ができる<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 値を設定するときは、変数に代入するのと同様の書き方ができる</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c.Name = "太郎";<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c.LifePoint = 100;<br>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 値を取得するときも、変数を読み取るときと同様の書き方ができる<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 値を取得するときも、変数を読み取るときと同様の書き方ができる</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c.Name);<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c.LifePoint);<br>
       &nbsp;&nbsp;&nbsp; }<br>
@@ -168,12 +167,12 @@
     <h2><a id="mozTocId60693" class="mozTocH2"></a>君はすでにそのメリットを受けている</h2>
     <p>Unityなどでプログラムを書いていると、すでにこのプロパティのメリットを享受しています。<br>
       Unityで次のようなプログラムは一般的ですが：</p>
-    <p class="source">// オブジェクトのx座標を取得する<br>
+    <p class="source"><span style="color: #219a43;">// オブジェクトのx座標を取得する</span><br>
       float posX = someObject.transform.position.x;</p>
     <p>もし、C#にプロパティが無かったら、次のようになってしまいます：</p>
-    <p class="source">// オブジェクトのx座標を取得する<br>
+    <p class="source"><span style="color: #219a43;">// オブジェクトのx座標を取得する</span><br>
       float posX = someObject.GetComponent&lt;Transform&gt;().GetPosition().GetX();</p>
-    <p>絶対イヤですね！（C++では普通によく見る光景…）<br>
+    <p>絶対イヤですね！（C++やJavaでは普通によく見る光景…）<br>
       ありがとうプロパティ！</p>
     <h1><a id="mozTocId525931" class="mozTocH1"></a>getとsetを異なるアクセスレベルにする</h1>
     <p>getとsetを異なるアクセスレベルにすることができます。よくあるのが「get（読み取り）はpublicで良いが、外部からのset（書き込み）は禁止したい」というものです。次のように書くことができます：</p>
@@ -207,7 +206,7 @@
     <p>なんと、変数の定義すら要らなくなりました！<br>
       内部的には、自動的に2-1章と同様のコードが生成されています。というわけで「自動実装プロパティ」と呼ばれます。</p>
     <h2><a id="mozTocId90581" class="mozTocH2"></a>異なるアクセスレベルにする</h2>
-    <p>自動実装プロパティでも、getとsetで異なるアクセスレベルを設定することができます。外部からのsetを禁止したい場合は次のようになります：</p>
+    <p>自動実装プロパティでも、getとsetで異なるアクセスレベルを設定することができます。外部からのsetを禁止したい（外部からは読み取り専用にしたい）場合は次のようになります：</p>
     <p class="source">class Character<br>
       {<br>
       &nbsp;&nbsp;&nbsp; public int LifePoint { get; <strong>private</strong> set; }<br>
@@ -223,8 +222,8 @@
     <p>ホントこれなんとかしてほしすぎる…😫</p>
     <p>なので、本山は、Unityでプログラムを書くときは、状況に応じて以下のどちらかの方法で実装します：</p>
     <ul>
-      <li>特に処理を挟み込む必要が無ければ、プロパティを使わずに普通の変数（public または [SerializeField] ）にする</li>
-      <li>処理を挟み込む必要がある場合は自動実装ではないプロパティを使う（そして、フィールドを[SerializeField]にする）</li>
+      <li>特に処理を挟み込む必要が無ければ、プロパティを使わずに普通の変数（<code>public</code>または<code>[SerializeField] </code>）にする</li>
+      <li>処理を挟み込む必要がある場合は自動実装ではないプロパティを使う（そして、フィールドを<code>[SerializeField]</code>にする）</li>
     </ul>
     <h1><a id="mozTocId881758" class="mozTocH1"></a>読み取り専用プロパティ</h1>
     <p>読み取り専用（getしかできない）プロパティを作れます（C#6.0から可能となった）。</p>
@@ -247,7 +246,7 @@
       {<br>
       &nbsp;&nbsp;&nbsp; public int LifePoint { get; set; }<br>
       &nbsp;&nbsp;&nbsp; public string Name { get; set; }<br>
-      &nbsp;&nbsp;&nbsp; // 表示用に名前とライフポイントを結合した文字列を返却<br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 表示用に名前とライフポイントを結合した文字列を返却</span><br>
       &nbsp;&nbsp;&nbsp; <strong>public string NameAndLife =&gt; Name + " (" + LifePoint + ")";</strong><br>
       }</p>
     <p>ちなみに、プロパティとは全然関係無いのですが、C#6.0から、新しい文字列連結方法が追加されました。文字列リテラルの前に<code>$</code>を書くことで、文字列リテラル中に変数を埋め込む形で記述することができます。次のようになります：</p>
@@ -255,7 +254,7 @@
       {<br>
       &nbsp;&nbsp;&nbsp; public int LifePoint { get; set; }<br>
       &nbsp;&nbsp;&nbsp; public string Name { get; set; }<br>
-      &nbsp;&nbsp;&nbsp; // 表示用に名前とライフポイントを結合した文字列を返却<br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 表示用に名前とライフポイントを結合した文字列を返却</span><br>
       &nbsp;&nbsp;&nbsp; public string NameAndLife =&gt; <strong>$"{Name} ({LifePoint})"</strong>;<br>
       }</p>
     <p>今後はこちらの記法が推奨されます。</p>
@@ -270,8 +269,8 @@
       <li><strong>予測しづらい副作用がある</strong>。getしただけなのに内部状態が変わってしまう場合など。</li>
       <li><strong>重い処理が走る</strong>。時間のかかる複雑な計算が行われたり、ファイルアクセス、DBアクセス、Webアクセスなどが行われたりする場合など。</li>
     </ul>
-    <p>とにかく、プロパティというものは、利用者側からすれば、ほとんど変数のようであって、副作用は無いもの、として扱いたいわけです。アクセスしただけで副作用があったり、処理に時間がかかってしまうのは期待を裏切ることになります。ですので、そういった場合は、プロパティではなくメソッドにしましょう。</p>
-    <p>また、その際、ただメソッドにすれば良いというわけではなく、メソッド名も工夫しましょう。例えば「GetData()」という名前のメソッドがあったとして、呼び出したらWebにデータを取りに行って3秒間固まった、というのは、完全に利用者の期待を裏切っています。「FetchData()」や「DownloadData()」などといった、時間がかかることをにおわす名前にしましょう。</p>
+    <p>とにかく、プロパティというものは、利用者側からすれば「ほとんど変数のようであって、副作用は無いもの」として扱いたいわけです。アクセスしただけで副作用があったり、処理に時間がかかってしまうのは利用者の期待を裏切ることになります。ですので、そういった場合は、プロパティではなくメソッドにしましょう。</p>
+    <p>また、その際、ただメソッドにすれば良いというわけではなく、メソッド名も工夫しましょう。例えば「GetData()」という名前のメソッドがあったとして「呼び出したらWebにデータを取りに行って3秒間固まった」というのでは、完全に利用者の期待を裏切っています。「FetchData()」や「DownloadData()」などといった、時間がかかることをにおわす名前にしましょう。</p>
     <p><br>
     </p>
   </body>
