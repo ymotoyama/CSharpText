@@ -471,6 +471,10 @@
     <p><code>IEnumerator</code>インターフェースを実装していたときと比べると、楽すぎる…！</p>
     <p>C#では、<code>IEnumerator</code>が戻り値の<code>GetEnumerator()</code>メソッドを作って、その内部で<code>yield return</code>すると、自動的にイテレーターを生成してくれて、結局前章と同様のプログラムを自動生成してくれます。これを<strong>イテレーターブロック</strong>といいます。</p>
     <p><code>yield return</code>は前章の「CurrentとMoveNext()が一体になったもの」といったイメージです。</p>
+    <p class="column"><b>C# 9.0では、イテレーターブロックを拡張メソッドで定義可能となる</b><br>
+      <br>
+      2020年11月リリースのC#9.0では、イテレーターブロック（GetEnumerator()）を拡張メソッド（後日学びます）として定義できるようになります。<br>
+      これにより、自作のクラスではないライブラリやフレームワークなどの既存クラスに対しても、イテレーターブロックを追加することが可能となります。</p>
     <h2><a id="mozTocId904206" class="mozTocH2"></a>Unityのコルーチン</h2>
     <p><code>yield</code>という構文は、本来、このようにイテレーターを簡単に定義するためにC#に追加された文法なのですが、Unityではこれをハックし、複数のフレームにまたいだ処理を実現する<strong>コルーチン</strong>という仕組みを実装しています。Unityのコルーチンの仕組みを再現したプログラムが以下になります。きちんと理解すれば、Unityのコルーチンを完全に理解できると思います：</p>
     <p class="source">using System;<br>
