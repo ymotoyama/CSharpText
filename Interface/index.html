@@ -25,11 +25,11 @@
           <li><a href="#mozTocId805087">抽象クラスとの使い分け</a></li>
         </ol>
       </li>
-      <li><a href="#mozTocId438188">実用例</a>
+      <li><a href="#mozTocId129859">実用例</a>
         <ol>
           <li><a href="#mozTocId329668">IComparableを実装して自作クラスをソートする</a></li>
           <li><a href="#mozTocId104677">IDisposableを実装してusingステートメントのリソース自動解放を使う</a></li>
-          <li><a href="#mozTocId207215">自作のクラスをforeachで列挙する</a></li>
+          <li><a href="#mozTocId207215">IEnumeratorを実装して、自作のクラスをforeachで列挙する</a></li>
         </ol>
       </li>
       <li><a href="#mozTocId50325">イテレーターブロック</a>
@@ -46,6 +46,8 @@
     <p><br>
     </p>
     <p>わ か る か あ あ あ あ あ ！！！</p>
+    <p><br>
+    </p>
     <h2><a id="mozTocId852661" class="mozTocH2"></a>インターフェースのルール</h2>
     <p>インターフェースとは、あるクラスが、あるシグネチャのメソッドを持つことを保証するための機能です。</p>
     <p class="column"><b>メソッドのシグネチャとは</b><br>
@@ -67,13 +69,13 @@
       {<br>
       &nbsp;&nbsp;&nbsp; void Hoge();<br>
       }</p>
-    <p>インターフェース名は <code>I</code> から始めるのが慣例です。</p>
+    <p>C#では、インターフェース名は <code>I</code> から始めるのが慣例です（別に<code>I</code>から始まる名前ではなくても動きます）。</p>
     <p><strong>インターフェースでは、メソッドはシグネチャのみ定義し、実装（処理）は書きません（書けません※）</strong>。抽象クラスの抽象メソッドと同様です。<br>
-      ※2019年にリリースされたC#8.0から、インターフェースにも実装を書けるようになりましたが、基本的な使い方としては、実装は書きません。</p>
+      ※2019年にリリースされたC#8.0から、インターフェースにも実装（<code>デフォルト実装</code>）を書けるようになりましたが、基本的な使い方としては、実装は書きません。</p>
     <p><br>
     </p>
     <h3>インターフェースの実装</h3>
-    <p>インターフェースは、定義しただけでは意味がありません。クラスで実装して使います。実装とは、クラスの継承に似ています。</p>
+    <p>インターフェースは、定義しただけでは意味がありません。クラスで<code>実装</code>して使います。<strong>実装とは、インターフェースで定義されたメソッドの処理を記述すること</strong>です。クラスの継承をして抽象メソッドをオーバーライドすることに似ています。</p>
     <p class="source">class SampleClass : ISampleInterface<br>
       {<br>
       &nbsp;&nbsp;&nbsp; public void Hoge()<br>
@@ -81,15 +83,15 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...何か処理...<br>
       &nbsp;&nbsp;&nbsp; }<br>
       }</p>
-    <p>クラスを継承するように、クラス名の右に <code>: インターフェース名</code> と書きます。</p>
-    <p>今回は<code>SampleClass : ISampleInterface</code>としているので、「SampleClassはISampleInterfaceを実装している」となります。<br>
-      <strong>インターフェースを実装したクラスでは、インターフェースで定義されたシグネチャのメソッドを実装しなければなりません</strong>。<br>
+    <p>インターフェースを実装するときは、クラスを継承するときと同様に、クラス名の右に <code>: インターフェース名</code> と書きます。<br>
+      今回は<code>SampleClass : ISampleInterface</code>としているので、「SampleClass は ISampleInterfaceを実装している」となります。</p>
+    <p><strong>インターフェースを実装したクラスでは、インターフェースで定義されたシグネチャのメソッドを実装しなければなりません</strong>。<br>
       今回の<code>ISampleInterface</code>インターフェースでは<code>Hoge()</code>メソッドが定義されているため、<code>SampleClass</code>は<code>Hoge()</code>メソッドを必ず実装しなければなりません。試しに、上記プログラムの<code>SampleClass</code>から<code>Hoge()</code>を削除すると、コンパイルエラー（error CS0535: 'SampleClass' はインターフェイス メンバー 'ISampleInterface.Hoge()' を実装しません。）になります。</p>
-    <p>このように、<strong>インターフェースとは、クラスに、特定のシグネチャのメソッドの実装を強制する機能</strong>です。</p>
+    <p>このように、<strong>インターフェースとは、クラスに、特定のシグネチャのメソッドの実装を強制する機能</strong>です。別の見方をすると、<strong>クラスが、特定のシグネチャのメソッドを実装していることを保証する機能</strong>ともいえます。</p>
     <p><br>
     </p>
     <h3>アップキャスト</h3>
-    <p>あるインターフェースを実装したクラスは、そのインターフェース型として扱うことができます。例えば、上記の<code>SampleClass</code>のインスタンスは、<code>ISampleInterface</code>型として扱うことができます。</p>
+    <p><strong>あるインターフェースを実装したクラスの変数は、そのインターフェース型の変数として扱うことができます</strong>。例えば、上記の<code>SampleClass</code>のインスタンスは、<code>ISampleInterface</code>型として扱うことができます。</p>
     <p class="source">class Program<br>
       {<br>
       &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
@@ -103,10 +105,12 @@
     </p>
     <h3>細かいルール</h3>
     <ul>
-      <li>インターフェースに定義されたメソッドのアクセスレベルはpublicとなります（インターフェースは外側から呼ばれるためのメソッドのシグネチャを定義するものであるため）。</li>
-      <li>プロパティのシグネチャも定義できます。</li>
-      <li>メソッドやプロパティの数に制限はありません。</li>
-      <li>フィールド（メンバー変数）は定義できません。定数も定義できません。</li>
+      <li>インターフェースにメソッドを定義するとき、アクセス修飾子は付けられません。暗黙的にpublicとなります（インターフェースは外側から呼ばれるためのメソッドのシグネチャを定義するものであるため）。</li>
+      <li>メソッドだけでなく、プロパティのシグネチャも定義できます。</li>
+      <li>定義するメソッドやプロパティの数に上限はありません。</li>
+      <li>インターフェースは、別のインターフェースを継承することができます。</li>
+      <li>フィールド（メンバー変数）は定義できません</li>
+      <li>定数は定義できません。</li>
     </ul>
     <h1><a id="mozTocId818052" class="mozTocH1"></a>抽象クラスとの違い</h1>
     <h2><a id="mozTocId619987" class="mozTocH2"></a>抽象クラスとの違い</h2>
@@ -131,8 +135,9 @@
     <h2><a id="mozTocId805087" class="mozTocH2"></a>抽象クラスとの使い分け</h2>
     <p>本質的には同じものだったり、仲間だったりするものは、抽象クラスで表現したほうが良いでしょう。例えば、ゲーム開発において、全ての敵キャラクターの基底となるEnemyクラスを作り、そこから派生して具体的な敵クラスを作る…などというのは、抽象クラスを使うのが良いでしょう。</p>
     <p>インターフェースの強みは、本質的には関係のないクラスにも、同じ操作を与えられることです。例えば、C#の組み込みの型で<code>int</code>と<code>string</code>があります。<code>int</code>は数値であり、<code>string</code>は文字列です。全く違う型ですが、どちらも「比較して順序を求めることができる」ことを表す<code>IComparable</code>インターフェースを実装しているため、<code>List</code>などに格納した際に、簡単にソートできるのです。<code>List</code>のソースコードに、<code>int</code>用のソート処理、<code>string</code>用のソート処理などと型ごとの処理が書かれているわけではありません。<code>List</code>では、<code>IComparable</code>に定義された<code>CompareTo()</code>を呼び出し、その結果に基づいて並び替えているだけです。<br>
-      このように、本質の異なる様々な型に対し同じ操作を行いたい場合はインターフェースを使うのが良いでしょう。…というより、大抵、フレームワークやライブラリによってインターフェースが定義されているでしょうから、あなたは自分のクラスでそれを実装することになるでしょう。</p>
-    <h1><a id="mozTocId438188" class="mozTocH1"></a>実用例</h1>
+      このように、<strong>本質の異なる様々な型に対し同じ操作を行いたい場合はインターフェースを使うのが良い</strong>でしょう。…というより、大抵、フレームワークやライブラリによってインターフェースが定義されているでしょうから、あなたは自分のクラスでそれを実装することになるでしょう。</p>
+    <h1><a id="mozTocId129859" class="mozTocH1"></a>実用例</h1>
+    <p>実際にC#のコードでよく使われるインターフェースを実装して、動作を確認していきましょう。</p>
     <h2><a id="mozTocId329668" class="mozTocH2"></a>IComparableを実装して自作クラスをソートする</h2>
     <h3>前置き</h3>
     <p>C#の<code>List</code>には<code>Sort()</code>という機能があり、中身を昇順に並べ替えてくれます。<code>int</code>や<code>float</code>を並べ替えられるのはもちろんのこと、文字列である<code>string</code>も並べ替えることができます。例です：</p>
@@ -140,8 +145,10 @@
       {<br>
       &nbsp;&nbsp;&nbsp; List&lt;string&gt; list = new List&lt;string&gt;() { "David", "Bob", "Alice", "Cathy" };<br>
       <br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// ソート</span><br>
       &nbsp;&nbsp;&nbsp; list.Sort();<br>
       <br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 内容を出力する。アルファベット順に出力される。</span><br>
       &nbsp;&nbsp;&nbsp; foreach (string item in list)<br>
       &nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(item);<br>
@@ -153,8 +160,10 @@
     <p class="source">&nbsp;&nbsp;&nbsp; // 学生クラス<br>
       &nbsp;&nbsp;&nbsp; class Student<br>
       &nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int grade; // 学年<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string name; // 名前<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int grade; <span
+        style="color: #219a43;">// 学年</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string name; <span
+        style="color: #219a43;">// 名前</span><br>
       &nbsp;&nbsp;&nbsp; }<br>
       <br>
       &nbsp;&nbsp;&nbsp; class Program<br>
@@ -185,19 +194,21 @@
     <p><code>Student</code>クラスに<code>IComparable</code>インターフェースを実装させましょう。今回は、学年の昇順でソートできるにしてみましょう：</p>
     <p class="source">&nbsp;&nbsp;&nbsp; class Student <em>: IComparable&lt;Student&gt;</em><br>
       &nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int grade; // 学年<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string name; // 名前<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int grade; <span
+        style="color: #219a43;">// 学年</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string name; <span
+        style="color: #219a43;">// 名前</span><br>
       <br>
       <em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int CompareTo(Student other)<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return grade.CompareTo(other.grade);<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</em><br>
       &nbsp;&nbsp;&nbsp; }</p>
-    <p><code>IComparable</code>インターフェースを実装しました。<code>IComparable</code>の右の<code>&lt;Student&gt;</code>は<strong>ジェネリック</strong>という機能のための表記なのですが、これはまた後日勉強します。</p>
+    <p><code>IComparable</code>インターフェースを実装しました。<code>IComparable</code>の右の<code>&lt;Student&gt;</code>は<strong>ジェネリック</strong>という機能のための記述なのですが、これはまた後日勉強します。</p>
     <p><code>IComparable</code>を実装したクラスは<code>CompareTo()</code>メソッドを実装しなければなりません（<code>IComparable</code>にカーソルを合わせて<code>F12</code>キーを押すと定義に移動でき、それが確認できます。<code>CompareTo()</code>の詳細な説明も書いてあります）。</p>
-    <p><code>CompareTo()</code>の仕様は次のとおりです：</p>
+    <p><code>CompareTo()</code>が満たさなければならない仕様は次のとおりです：</p>
     <ul>
-      <li>引数で比較対象のオブジェクトが渡される</li>
+      <li>引数で比較対象のオブジェクトを受け取る</li>
       <li>自分と相手を比較したとき</li>
       <ul>
         <li>等しい場合は0を返却する</li>
@@ -205,7 +216,6 @@
         <li>自分のほうが大きい（昇順で後）の場合は正の数を返却する</li>
       </ul>
     </ul>
-    <p>これを満たす必要があります（これを満たしていればどのような実装方法でも良い）。</p>
     <p>今回は学年でソートしたいため、<code>int</code>型に定義された<code>CompareTo()</code>をそのまま使わせてもらいました。</p>
     <p>これで、学年でソートされた結果が出力されます。</p>
     <p><br>
@@ -215,8 +225,10 @@
       次のようなコードになります：</p>
     <p class="source">&nbsp;&nbsp;&nbsp; class Student : IComparable&lt;Student&gt;<br>
       &nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int grade; // 学年<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string name; // 名前<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int grade; <span
+        style="color: #219a43;">// 学年</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string name; <span
+        style="color: #219a43;">// 名前</span><br>
       <br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int CompareTo(Student other)<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
@@ -237,22 +249,25 @@
     <p>答えは簡単で、学年の比較結果の正負を逆にするだけです：</p>
     <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int CompareTo(Student other)<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 学年を比較した結果<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 学年を比較した結果</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int gradeCompareResult = grade.CompareTo(other.grade);<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 学年が等しくない場合は、それを基に並べ替える<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 学年が等しくない場合は、それを基に並べ替える</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (gradeCompareResult != 0)<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return <em>-</em>gradeCompareResult;<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 学年が等しい場合は、名前で比較した結果を基に並べ替える<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 学年が等しい場合は、名前で比較した結果を基に並べ替える</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return name.CompareTo(other.name);<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
     <p><br>
     </p>
     <h3>ソートについて</h3>
-    <p>「このクラスのインスタンスを並べ替えるときは、常にこの規則で並べるんだ！」という場合は、上記の<code>IComparable</code>を実装する方法が最適ですが、状況によって様々なソート方法が考えられる場合（例えば、あるときは性別でソート、あるときは学籍番号でソート…など）は、<code>IComparer</code>を実装した比較クラスを作るか、<strong>ラムダ式</strong>（また今度やります）を使うのが良いでしょう。まあ、とにかく、<code>IComparable</code>を実装することだけがソートする唯一の方法<b>ではない</b>ということです。</p>
+    <p>あなたが独自のクラスを作り、そしてそのクラスの標準的なソート方法を用意したい場合は、上記の<code>IComparable</code>を実装するのが最適ですが、状況によって様々なソート方法が考えられる場合（例えば、あるときは性別でソート、あるときは学籍番号でソート…など）は、<code>IComparer</code>を実装した比較クラスを作るか、<strong>ラムダ式</strong>（また今度やります）を使うのが良いでしょう。まあ、とにかく、<code>IComparable</code>を実装することだけがソートする唯一の方法<b>ではない</b>ということです。</p>
     <h2><a id="mozTocId104677" class="mozTocH2"></a>IDisposableを実装してusingステートメントのリソース自動解放を使う</h2>
     <p>自分のプログラムの外部にアクセスするようなプログラムでは、リソースの確保・解放が必要になる場合があります。例えば、ファイルアクセス、DBアクセス、ネットワークアクセスなどです。ファイルを開いたら、閉じなければなりません。DBにアクセスするときは接続を確立し、使い終わったら切断する必要があります。そうしないと、他のプログラムがアクセスできなくなってしまったり、メモリーリークとなってしまったりします。</p>
     <p>「開けたら閉める」、「使ったら片付ける」、当たり前のことですが、つい忘れてしまったり、処理中にエラーが発生して後始末処理が飛ばされてしまったりということもあります。</p>
-    <p>このようなミスを防ぐために、C#では、<strong>usingステートメント</strong>という機能があります。これを使うと、明示的に後始末処理を書かなくても自動で実行されます。また、途中でエラーが起きても、きちんと後始末処理が実行されます。</p>
+    <p>このようなミスを防ぐために、C#では、<strong>usingステートメント</strong>という機能があります。これを使うと、明示的に後始末処理を書かなくても自動で実行されます。また、途中でエラーが起きても、飛ばされることなくきちんと後始末処理が実行されます。</p>
     <p>この機能を使うためには、後始末処理が必要なクラスにて、<code>IDisposable</code>インターフェースを実装します。</p>
     <p class="source">class Sample : IDisposable<br>
       {<br>
@@ -280,7 +295,7 @@
     <p>これを実行すると、自動的に<code>Dispose()</code>が呼ばれていることが確認できます。</p>
     <p>まあ、実際は<code>IDisposable</code>を実装したクラスを自作するよりも、既に用意されたクラスを使わせてもらうことのほうが圧倒的に多いでしょう。より詳しい使い方は、以下のページがわかりやすいです。</p>
     <p><a href="https://qiita.com/Nossa/items/947f8985e4d5f13d9bc2">外部リソースの解放には using ステートメントを使う</a></p>
-    <h2><a id="mozTocId207215" class="mozTocH2"></a>自作のクラスをforeachで列挙する</h2>
+    <h2><a id="mozTocId207215" class="mozTocH2"></a>IEnumeratorを実装して、自作のクラスをforeachで列挙する</h2>
     <p>Listなどの内容を<code>foreach</code>で列挙するのはお馴染みのコードですが：</p>
     <p class="source">static void Main(string[] args)<br>
       {<br>
@@ -298,7 +313,7 @@
       <br>
       namespace ConsoleApp1<br>
       {<br>
-      &nbsp;&nbsp;&nbsp; // 道具を入れる袋<br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 道具を入れる袋</span><br>
       &nbsp;&nbsp;&nbsp; class Bag<br>
       &nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string item0;<br>
@@ -318,6 +333,8 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bag.item2 = "やくそう";<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bag.item3 = "どくけしそう";<br>
       <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// bagの中身を列挙したい…が、これはコンパイルエラーとなる</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (string item in bag)<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(item);<br>
@@ -327,8 +344,8 @@
       }</p>
     <p>ショボいサンプルですが勘弁してください…普通はアイテムは配列やリストで保持するべきですが、話を単純にするために、<code>string</code>の変数4個にしました。</p>
     <p><code>Bag</code>の中には道具が4つ入れられるという仕様です。ここで、道具の一覧を<code>foreach</code>で列挙できたら便利だなと思って上記のようなコードを書いたものの、上記はコンパイルエラーとなります（CS1579&nbsp;&nbsp; &nbsp;foreach ステートメントは、'Bag' が 'GetEnumerator' のパブリック インスタンス定義を含んでいないため、型 'Bag' の変数に対して使用できません）。</p>
-    <p><code>foreach</code>は、<code>IEnumerable</code>インターフェースを実装し、<code>GetEnumerator()</code>メソッドを実装するクラスだけが対象となるのです。</p>
-    <p><code>GetEnumerator()</code>は<code>IEnumerator</code>インターフェースを実装したオブジェクトを返却するメソッドです。<code>IEnumerator</code>は、C++でいうところの<strong>イテレーター</strong>です。列挙可能なオブジェクトの、「今どこを指しているのか」、「次の項目を指す」、「指している項目を取得する」などの機能を提供します。具体的に言うと、次の機能を実装しなければなりません：</p>
+    <p><code>foreach</code>は、「<code>IEnumerable</code>インターフェースを実装し、<code>GetEnumerator()</code>メソッドを実装するクラス」だけが列挙の対象となるのです。</p>
+    <p><code>GetEnumerator()</code>は<code>IEnumerator</code>インターフェースを実装したオブジェクトを返却するメソッドです。<code>IEnumerator</code>は、C++でいうところの<strong>イテレーター</strong>です。列挙可能なオブジェクトの、「今どこを指しているのか」、「次の項目を指す」、「指している項目を取得する」などの機能を提供します。具体的に言うと、<code>IEnumerator</code>を実装するクラスでは、次のプロパティおよびメソッドを実装しなければなりません：</p>
     <ul>
       <li>Currentプロパティ：現在指している項目を返却する。</li>
       <li>MoveNext()メソッド：指している項目を次へ移す。次の項目があればtrue, 無ければfalseを返却する。</li>
@@ -342,7 +359,7 @@
       <br>
       namespace ConsoleApp1<br>
       {<br>
-      &nbsp;&nbsp;&nbsp; // 道具を入れる袋<br>
+      &nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 道具を入れる袋</span><br>
       &nbsp;&nbsp;&nbsp; class Bag<em> : IEnumerable&lt;string&gt;</em><br>
       &nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string item0;<br>
@@ -415,7 +432,7 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
       &nbsp;&nbsp;&nbsp; }<br>
       }</p>
-    <p>これで<code>foreach</code>が機能するようになります！（めんどくさい）</p>
+    <p>これで<code>foreach</code>が機能するようになります！（めんどくさい。もっと楽な方法を次章で解説します）</p>
     <p><br>
     </p>
     <p>ちなみに、<code>foreach</code>の部分は、次のコードと等価です：</p>
@@ -464,17 +481,18 @@
       {<br>
       &nbsp;&nbsp;&nbsp; class Program<br>
       &nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // a, b, cと1フレーム毎に出力するコルーチン<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// a, b, cと1フレーム毎に出力するコルーチン</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; static IEnumerator GetEnumerator1()<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("a");<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return null; // 処理がここで止まり、他の処理に譲られる。MoveNext()が呼ばれると次の行から再開<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return null; <span
+        style="color: #219a43;">// 処理がここで止まり、他の処理に譲られる。MoveNext()が呼ばれると次の行から再開</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("b");<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return null;<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("c");<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // あ, い, う, え, おと1フレーム毎に出力するコルーチン<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// あ, い, う, え, おと1フレーム毎に出力するコルーチン</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; static IEnumerator GetEnumerator2()<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("あ");<br>
@@ -490,30 +508,39 @@
       <br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // コルーチンを管理するリスト<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// コルーチンを管理するリスト</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; List&lt;IEnumerator&gt; coroutines = new List&lt;IEnumerator&gt;();<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 2つのコルーチンをリストに追加<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 2つのコルーチンをリストに追加</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coroutines.Add(GetEnumerator1());<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coroutines.Add(GetEnumerator2());<br>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // メインループ（ループ1回がUnityのUpdate()1回に対応）<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// メインループ（ループ1回がUnityのUpdate()1回に対応）</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while (coroutines.Count &gt; 0)<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("---フレーム開始---");<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 完了したコルーチンを一時的に入れるためのリスト<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 完了したコルーチンを一時的に入れるためのリスト</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; List&lt;IEnumerator&gt; finished = new List&lt;IEnumerator&gt;();<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // すべてのコルーチンに1度ずつ仕事をさせる<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// すべてのコルーチンに1度ずつ仕事をさせる</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var coroutine in coroutines)<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // MoveNext()を行うと、処理が再開される。<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // まだ処理が残っている場合はtrueが返却される。<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// MoveNext()を行うと、処理が再開される。</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// まだ処理が残っている場合はtrueが返却される。</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (!coroutine.MoveNext())<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 終わったコルーチンをfinishedに追加<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 終わったコルーチンをfinishedに追加</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; finished.Add(coroutine);<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 終わったコルーチンをリストから除去<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 終わったコルーチンをリストから除去</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coroutines.RemoveAll(x =&gt; finished.Contains(x));<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("---フレーム終了---");<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
