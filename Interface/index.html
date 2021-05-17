@@ -46,8 +46,6 @@
     <p><br>
     </p>
     <p>わ か る か あ あ あ あ あ ！！！</p>
-    <p><br>
-    </p>
     <h2><a id="mozTocId852661" class="mozTocH2"></a>インターフェースのルール</h2>
     <p>インターフェースとは、あるクラスが、あるシグネチャのメソッドを持つことを保証するための機能です。</p>
     <p class="column"><b>メソッドのシグネチャとは</b><br>
@@ -455,17 +453,17 @@
     <p>そこで、最近のC#では、イテレーターを簡単に定義するための機能が追加されています。それを使うと、上記の<code>Bag</code>クラスは次のようになります：</p>
     <p class="source">&nbsp;&nbsp;&nbsp; class Bag<br>
       &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string item0;<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string item1;<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string item2;<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string item3;<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public string item4;<br>
       <br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public IEnumerator&lt;string&gt; GetEnumerator()<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return item0;<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return item1;<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return item2;<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return item3;<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return item4;<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
       &nbsp;&nbsp;&nbsp; }</p>
     <p><code>IEnumerator</code>インターフェースを実装していたときと比べると、楽すぎる…！</p>
