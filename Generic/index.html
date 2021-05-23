@@ -174,14 +174,14 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// ジェネリックメソッドの呼び出し</span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hoge&lt;int&gt;(100);<br>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 引数の型から、型パラメーターが自明のときは、型パラメーターを省略可能<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // <b>省略できるときは省略するのが普通です</b></span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// 引数の型から、型パラメーターが自明のときは、型パラメーターを省略可能。<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // <b>省略できるときは省略するのが普通です</b></span>。<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hoge(100);<br>
       &nbsp;&nbsp;&nbsp; }<br>
       }</p>
     <p><br>
     </p>
-    <p>Unityの<code>GetComponent</code>などは、ジェネリックメソッドです。</p>
+    <p>ちなみに、Unityの<code>GetComponent</code>などは、ジェネリックメソッドです。</p>
     <p class="source"><span style="color: #219a43;">// 引数が無いので、型パラメーターで型を渡す必要がある</span><br>
       Rigidbody rb = GetComponent&lt;Rigidbody&gt;();<br>
       <br>
@@ -191,7 +191,7 @@
     </p>
     <h1><a id="mozTocId882354" class="mozTocH1"></a>ジェネリック型制約</h1>
     <p>前章のジェネリックメソッドを利用して、色んな型に対応した<code>Max()</code>関数を作ってみましょう！<br>
-      <code>Max()</code>関数というのは、引数で数値を2つ受け取り、大きな報を返却するという定番の関数です。</p>
+      <code>Max()</code>関数というのは、引数で数値を2つ受け取り、大きい方を返却するという定番の関数です。</p>
     <h2><a id="mozTocId425500" class="mozTocH2"></a>ジェネリックメソッドの型制約</h2>
     <p>例えば、int型にのみ対応した<code>Max()</code>関数は次のようになります：</p>
     <p class="source">static int Max(int a, int b)<br>
@@ -200,19 +200,20 @@
       }</p>
     <p><br>
     </p>
-    <p>これの<code>float</code>版、<code>double</code>版、<code>long</code>版…などとたくさん作るのはイヤなので、ジェネリックを使って、一度の定義で済ませたいと思います。次のようなコードを書きました：</p>
+    <p>これの<code>float</code>版、<code>double</code>版、<code>long</code>版…などとたくさん作るのはイヤなので、ジェネリックを使って一度の定義で済ませたいと思い、次のようなコードを書きました：</p>
     <p class="source">static T Max&lt;T&gt;(T a, T b)<br>
       {<br>
       &nbsp;&nbsp;&nbsp; return a &gt; b ? a : b;<br>
       }</p>
     <p>ところが、<strong>これはコンパイルエラーとなってしまいます</strong>。</p>
     <p><code>T</code>という型はどんな型にでもなる可能性があるため、比較演算子<code>&gt;</code>が使えないのです。比較できない型が入ってくる可能性があるためです。</p>
-    <p>（C++のテンプレートではこのようなことも可能なのですが…。C++のテンプレートの場合は、比較できない型でこの関数を利用しようとしたときにコンパイルエラーとなります）</p>
+    <p>（ちなみにC++のテンプレートではこのようなことも可能なのですが…。C++のテンプレートの場合は、比較できない型でこの関数を利用しようとしたときにコンパイルエラーとなります）</p>
     <p><br>
     </p>
     <p>では、どうしたらよいのでしょうか。<br>
       ここで、<strong>ジェネリック型制約</strong>の出番です。</p>
-    <p>ジェネリック型制約を使うと、型パラメーターが、ある特徴を持つことを強制できます。例えば、次のように書くことで、<code>T</code>は必ず<code>IComparable</code>インターフェースを実装している（つまり比較可能である）ことが保証されます。</p>
+    <p>ジェネリック型制約を使うと、型パラメーターが、ある特徴を持つことを強制できます。もう少し具体的にいうと、あるクラスを継承した型であること、またはあるインターフェースを実装した型であることを強制できます。<br>
+      例えば、次のように書くことで、<code>T</code>は必ず<code>IComparable</code>インターフェースを実装している（つまり比較可能である）ことが保証されます。</p>
     <p class="source">class Program<br>
       {<br>
       &nbsp;&nbsp;&nbsp; static T Max&lt;T&gt;(T a, T b) <strong>where T : IComparable</strong><br>
@@ -223,23 +224,21 @@
       &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
       &nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #219a43;">// IComparableを実装した型ならMax()が使える</span><br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1, 2)); <span
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1, 2)); <span
         style="color: #219a43;">// int</span><br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1.0f, 0.1f)); <span
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1.0f, 0.1f)); <span
         style="color: #219a43;">// float</span><br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1L, 1234567890123456L)); <span
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(1L, 1234567890123456L)); <span
         style="color: #219a43;">// long</span><br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max("ABC", "DEF")); <span
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max("ABC", "DEF")); <span
         style="color: #219a43;">// string</span><br>
       <br>
-      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 例えばProgramクラスは比較できないので、以下はコンパイルエラーになる</span><br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 例えばProgramクラスは比較できないので、<b>以下はコンパイルエラーになる</b></span><br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Program p1 = new Program();<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Program p2 = new Program();<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(Max(p1, p2));<br>
       &nbsp;&nbsp;&nbsp; }<br>
       }</p>
-    <p><br>
-    </p>
     <p>残念な点としては、相変わらず比較演算子<code>&gt;</code>は使えないので、<code>CompareTo()</code>を使わなければならないという点ですね…。</p>
     <p>このような感じでいまいちパッとしないジェネリックメソッドの型制約機能です…。賢い人からは「わざわざジェネリック使わんでも次のようにインターフェース使えばええんちゃう？」という意見が出てきそうです：</p>
     <p class="source">static <strong>IComparable</strong> Max(<strong>IComparable</strong> a, <strong>IComparable</strong> b)<br>
@@ -256,15 +255,15 @@
     <p>ちなみに、実は、C#標準のMathクラスには<code>Max()</code>関数が既に定義されているのですが、その定義がどうなっているのかというと…</p>
     <p><img src="image/max.png" alt=""></p>
     <p>型の数だけ定義！ めっちゃ脳筋実装です💪🧠</p>
-    <p>なぜこうなっているのかというと、<code>CompareTo()</code>を使うより比較演算子で比較したほうがわずかですが速いからです。数学的計算は速さが重視されるため、このようになっています。また、未知の型に対応する必要性が低いであろうと考えられるためです。</p>
+    <p>なぜこうなっているのかというと、<code>CompareTo()</code>を使うより比較演算子で比較したほうがわずかですが速いからです。数学的計算は速さが重視されるため、このようになっています。また、未知の型に対応する<code>Max()</code>関数の必要性が低いであろうと考えられるためです。</p>
     <h2><a id="mozTocId69604" class="mozTocH2"></a>ジェネリッククラスの型制約</h2>
-    <p>ジェネリッククラスに対して型制約を行いたい場合は、次のように記述します：</p>
+    <p>型制約は、ジェネリックメソッドだけでなく、ジェネリッククラスに対しても使えます。次のように記述します：</p>
     <p class="source">class AnyBox&lt;T&gt;<strong> where T : IComparable</strong><br>
       {<br>
       &nbsp;&nbsp;&nbsp; public T value;<br>
       }</p>
     <h2><a id="mozTocId697030" class="mozTocH2"></a>いろいろな制約</h2>
-    <p>上記までの例では、制約としてインターフェースを指定していますが、それ以外の制約もあります。例えば「クラスである」とか「値型である」とか。<br>
+    <p>上記までの例では、制約として「インターフェースを実装していること」を指定していますが、それ以外の制約の指定もあります。例えば「クラスである」とか「値型である」とか。<br>
       例えば、次のように記述することで、型パラメーターにクラスしか指定できなくなります（値型（intやfloatや構造体など）を指定できなくなる）：</p>
     <p class="source">class AnyBox&lt;T&gt;<strong> where T : class</strong><br>
       {<br>
