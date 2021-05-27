@@ -108,25 +108,51 @@
     <p>また、既存の項目を書き換える機能はありません。</p>
     <p>インデクサーを作って、上記の問題を一気に解決しましょう。インデクサーが完成したら、<code>At()</code>メソッドは削除して構いません。</p>
     <h2><a id="mozTocId377499" class="mozTocH2"></a>列挙可能にしよう</h2>
-    <p>現状の<code>MyArrayList</code>は<code>foreach</code>で列挙することができません。<code>IEnumerable</code>インターフェースを実装するかイテレーターブロックを使うかして、<code>foreach</code>で列挙可能にしましょう。</p>
-    <br>
+    <p>現状の<code>MyArrayList</code>は<code>foreach</code>で列挙することができません。<code>IEnumerable</code>インターフェースを実装するかイテレーターブロックを使うかして、<code>foreach</code>で列挙可能にしましょう。<br>
+    </p>
     <ul>
     </ul>
     <h2><a id="mozTocId938709" class="mozTocH2"></a>指定した場所の項目を削除する機能を追加しよう</h2>
     <p>要素番号（インデックス）を指定して、その場所の項目を除去するメソッドを<code>MyArrayList</code>に追加しましょう。</p>
     <ul>
       <li>メソッド名は<code>RemoveAt</code>とする</li>
-      <li>引数で要素番号を指定する</li>
+      <li>引数で削除する位置（要素番号）を指定する</li>
+    </ul>
+    <p><b><b>💡</b>ヒント</b>：末尾の項目を削除する場合は、<code>Count</code>を1つ減らすだけで良いです。末尾以外の項目を削除する場合は、削除対象の項目より後ろの全ての項目を1つ前にずらします（<code>Array.Copy()</code>を使う）</p>
+    <p>
+    </p>
+    <p class="column"><b>配列の中の全部ではなく一部分だけコピーする方法</b><br>
+      <br>
+      配列のある部分からある部分までを別の配列にコピーしたいときは次のように指定します。<br>
+      Array.Copy(コピー元配列, コピー元開始index, コピー先配列, コピー先開始index, コピーする要素数）<br>
+      <br>
+      サンプルコード：<br>
+      int[] src = new int[] { 100, 200, 300, 400, 500, 600, 700, 800 };<br>
+      int[] dest = new int[] { 999, 999, 999, 999, 999, 999, 999, 999 };<br>
+      Array.Copy(src, 2, dest, 3, 4);<br>
+      // destは以下のようになる<br>
+      // 999, 999, 999, 300, 400, 500, 600, 999<br>
+      <br>
+      コピー元配列とコピー先配列は同じでも大丈夫です。<br>
+      サンプルコード：<br>
+      int[] a = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };<br>
+      Array.Copy(a, 3, a, 2, 7);<br>
+      // aは以下のようになる（2が削除された）<br>
+      // 0, 1, 3, 4, 5, 6, 7, 8, 9, 9<br>
+    </p>
+    <ul>
     </ul>
     <h2><a id="mozTocId175604" class="mozTocH2"></a>指定した場所に項目を挿入する機能を追加しよう</h2>
     <p>指定した場所に項目を挿入するメソッドを<code>MyArrayList</code>に追加しましょう。</p>
     <ul>
       <li>メソッド名は<code>Insert</code>とする</li>
-      <li>引数で要素番号と値を指定する</li>
+      <li>引数で挿入位置と値を指定する</li>
     </ul>
     <p>例：<br>
       {100, 200, 300, 400}という内容の<code>MyArrayList</code>があるとして、<code>Insert(1, 999)</code>とした場合、内容は次のようになる<br>
       {100, 999, 200, 300, 400}</p>
+    <p><b><b>💡</b>ヒント</b>：まず、配列の最大数のチェックを行い、足りなければ拡張を行いましょう。<br>
+      挿入位置以降の項目を後ろにずらすには、<code>Array.Copy()</code>を使いましょう。</p>
     <h2><a id="mozTocId638136" class="mozTocH2"></a>指定した値が含まれているか調べる機能を追加しよう</h2>
     <p>指定した値が含まれているかを調べるメソッドを<code>MyArrayList</code>に追加しましょう。</p>
     <ul>
@@ -134,7 +160,7 @@
       <li>引数で内容と同じ型の値を指定する</li>
       <li>戻り値はbool型とする。指定した値が含まれている場合は<code>true</code>を、そうでなければ<code>false</code>を返却する</li>
     </ul>
-    <p><b><b>💡</b>ヒント</b>：ジェネリック型同士を<code>==</code>演算子で比較することはできません。<code>Equals()</code>による比較を行いましょう。<code>Equals()</code>はあらゆる型が使えるメソッドです。<code>Equals()</code>は等しければ<code>true</code>、等しくなければ<code>false</code>を返却します。</p>
+    <p><b><b>💡</b>ヒント</b>：ジェネリック型同士を<code>==</code>演算子で比較することはできません。<code>Equals()</code>による比較を行いましょう。<code>Equals()</code>は等しければ<code>true</code>、等しくなければ<code>false</code>を返却するメソッドです。<code>Equals()</code>はあらゆる型で使えます。</p>
     <p class="column"><b>なぜジェネリック型同士で <code>==</code> 演算子は使えないの？</b><br>
       <br>
       C#では、全ての参照型（クラス等）は<code>==</code>が使えますが、値型（構造体）は<code>==</code>演算子をオーバーロードしていない限り、<code>==</code>による比較が使えません。ジェネリック型には構造体も入ってくる可能性があるため、<code>==</code>は使えません。ジェネリック型制約を使って型を参照型のみに制限すれば、<code>==</code>を使うことができます。</p>
