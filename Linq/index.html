@@ -15,7 +15,7 @@
     <h1>LINQとは</h1>
     <h2>LINQとは</h2>
     <p>LINQ（リンク）とは、「Language Integrated Query」の略で、日本語にすると「統合言語クエリ」ですが、これは覚えなくて良いです。</p>
-    <p>LINQは、様々な種類のデータ集合に対して、標準化された方法でデータを問い合わせることができるC#の言語機能のことです。「様々な種類のデータ集合」というものの具体例を上げると、データベース、XML、プログラムで生成した配列などです。LINQ登場以前は、データソースの種類に応じた取得方法でデータを取得する必要がありました。例えば：</p>
+    <p>LINQは、様々な種類のデータ集合に対して、標準化された方法でデータを問い合わせることができるC#の言語機能のことです。「様々な種類のデータ集合」の具体例を上げると、データベース、XML、プログラムで生成した配列などです。LINQ登場以前は、データソースの種類に応じた取得方法でデータを取得する必要がありました。例えば：</p>
     <ul>
       <li>データベースから目的のデータを取り出すには、SQLというデータベース専用の言語を使う</li>
       <li>XMLから目的のデータを取り出すには、パース（変換処理）を行う</li>
@@ -95,9 +95,10 @@
     <p><br>
     </p>
     <h1>名前空間</h1>
-    <p>LINQ関連のメソッドは<code>System.Linq</code>名前空間に定義されているため、using宣言が必要なので注意しましょう。</p>
+    <p>LINQ関連のメソッドは<code>System.Linq</code>名前空間に定義されています。using宣言を忘れないように注意しましょう。</p>
     <p class="source">using System.Linq;</p>
-    <p>VisualStudioで新規コンソールアプリケーションを作ったときは、デフォルトで書いてありますが、例えばUnityでプログラムを書いているときなどは、自分で追加する必要があります。</p>
+    <p><br>
+    </p>
     <p><br>
     </p>
     <h1>動作確認の準備</h1>
@@ -140,7 +141,7 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("本山", 20, 200));<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; characters.Add(new Character("関戸", 20, 500));<br>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
         style="color: #219a43;">// この下で動作確認する</span><br>
       <br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
@@ -173,7 +174,7 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c);<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
-    <p><code>ThenBy</code>の後に続けてさらに<code>ThenBy</code>を行うことも可能です。</p>
+    <p>3つ以上の条件でソートしたいときは、<code>ThenBy</code>の後に続けてさらに<code>ThenBy</code>を行います。</p>
     <p><br>
     </p>
     <p>もし<b>降順</b>（大きい順）にソートしたい場合は、<code>OrderBy</code>の代わりに<code>OrderByDescending</code>を、<code>ThenBy</code>の代わりに<code>ThenByDescending</code>を使います。</p>
@@ -212,7 +213,10 @@
     <p><code>Min</code>を使うと最小値、<code>Max</code>を使うと最大値が取得できます。</p>
     <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("最小レベルは" + characters.Min(c =&gt; c.Level));<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("最大レベルは" + characters.Max(c =&gt; c.Level));</p>
-    <p>正直、使えそうで使えない機能なんじゃないかと思います。ゲーム制作では「最小値」や「最大値」そのものが必要な場合より、「最小値を持つキャラクター」や「最大値を持つキャラクター」などが必要になることが多いと思うので。それを実現するための方法は後述します。</p>
+    <p>正直、使えそうで使えない機能なんじゃないかと思います。ゲーム制作では「最小値」や「最大値」そのものが必要な場合より、「最小値を持つキャラクター」や「最大値を持つキャラクター」などが必要になることが多いと思うので。それを実現するためには後述のAggregateを使います。</p>
+    <h1>Sum　合計値を求める</h1>
+    <p><code>Sum</code>を使うと、合計値が取得できます。コレクションがシンプルに合計を求められる型（例：int型の配列など）であれば、引数なしのSum()を呼び出すだけで済みます。Characterのコレクションから、レベルの合計値を求めたいというような場合は、以下のようにします。</p>
+    <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("レベルの合計は" + characters.Sum(c =&gt; c.Level));</p>
     <h1>Take　先頭から指定した個数取り出す</h1>
     <p>Takeを使うと、先頭から指定した個数だけ項目を取り出します。</p>
     <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("先頭から2つだけ取り出す");<br>
@@ -245,6 +249,7 @@
     <p>ただ、項目数が少ない場合はこの書き方でも問題無いと思いますが、項目数が多い場合は、パフォーマンスが悪化します。<code>Aggregate</code>の場合は、全項目を一周舐めるだけで処理が終わりますが、<code>OrderBy</code>は全項目のソートなので、項目数が多い場合は、無駄な並び替えがパフォーマンスを悪化させます（最大または最小が決まれば良いだけなのに、それ以外の全ての項目も並べ替えるため）。</p>
     <p>なお、<code>First</code>は、項目が存在しない場合は例外が発生するので、項目が存在しない可能性がある場合は、事前に個数をチェックするか、<code>FirstOrDefault</code>を使ってください。FirstOrDefaultは、項目が存在しない場合は、既定値（intやfloatなら0、参照型ならnull）が返却されます。</p>
     <h1>練習問題</h1>
+    <p>5章「動作確認の準備」で作成したコードに対して、以下の要求を満たすプログラムを作成してください。</p>
     <h2>　</h2>
     <p>LINQを使って、HPが500以下のキャラクターの集合を作成し、コンソールに出力してください。</p>
     <h2>　</h2>
