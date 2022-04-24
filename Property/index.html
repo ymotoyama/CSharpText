@@ -204,7 +204,27 @@
       &nbsp;&nbsp;&nbsp; public string Name { get; set; }<br>
       }</p>
     <p>なんと、変数の定義すら要らなくなりました！<br>
-      内部的には、自動的に2-1章と同様のコードが生成されています。というわけで「自動実装プロパティ」と呼ばれます。</p>
+      内部的には、次のようなコードが生成されています（あくまでイメージ）。</p>
+    <p class="source">class Character<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; private int lifePoint; <span style="color: #219a43;">// ※あくまでイメージです。実際にはlifePointという名前ではないし、アクセスできません。</span><br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public int LifePoint<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get { return lifePoint; }<br>
+      &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; set { lifePoint = value; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; private string name;<br>
+      <br>
+      &nbsp;&nbsp;&nbsp; public string Name<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; get { return name; }<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; set { name = value; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>というわけで「自動実装プロパティ」と呼ばれます。<br>
+      ちなみに、内部的に生成されたフィールド（上記のlifePointやname）のことを「バッキングフィールド」と呼びます。</p>
     <h2><a id="mozTocId90581" class="mozTocH2"></a>異なるアクセスレベルにする</h2>
     <p>自動実装プロパティでも、getとsetで異なるアクセスレベルを設定することができます。外部からのsetを禁止したい（外部からは読み取り専用にしたい）場合は次のようになります：</p>
     <p class="source">class Character<br>
@@ -220,11 +240,28 @@
     <p>こんなに楽で便利な自動実装プロパティですが、<strong>Unityとの相性が悪い</strong>です…</p>
     <p>Unityといえば、フィールド（メンバー変数）をpublic（または[SerializeField]属性）にしておくことにより、UnityエディターのInspectorビューから値をいじれる機能が超重要ですが、<strong>自動実装プロパティを使うと、Inspectorからいじれません</strong>。</p>
     <p>ホントこれなんとかしてほしすぎる…😫</p>
-    <p>なので、本山は、Unityでプログラムを書くときは、状況に応じて以下のどちらかの方法で実装します：</p>
-    <ul>
-      <li>特に処理を挟み込む必要が無ければ、プロパティを使わずに普通の変数（<code>public</code>または<code>[SerializeField] </code>）にする</li>
-      <li>処理を挟み込む必要がある場合は自動実装ではないプロパティを使う（そして、フィールドを<code>[SerializeField]</code>にする）</li>
-    </ul>
+    <p>どの手法でフィールド/プロパティを作るかの指針は次のとおりです。</p>
+    <table style="width: 100%" border="1">
+      <tbody>
+        <tr>
+          <td><br>
+          </td>
+          <td>外部クラスからアクセスしたい, get/setに処理を挟み込みたい</td>
+          <td>外部クラスからアクセスしない</td>
+        </tr>
+        <tr>
+          <td>Inspectorからいじりたい</td>
+          <td>自動実装でないプロパティにし、フィールドを[SerializeField]にする</td>
+          <td>[SerializeField]なフィールド</td>
+        </tr>
+        <tr>
+          <td>Inspectorからいじらない</td>
+          <td>自動実装プロパティ</td>
+          <td>privateなフィールド</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
     <h1><a id="mozTocId881758" class="mozTocH1"></a>読み取り専用プロパティ</h1>
     <p>読み取り専用（getしかできない）プロパティを作れます（C#6.0から可能となった）。</p>
     <p class="source">class Character<br>
