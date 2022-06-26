@@ -79,7 +79,9 @@
     </p>
     <h1>練習問題</h1>
     <h2>　</h2>
-    <p>int型に、3倍の値を出力する拡張メソッド<code>Sanbai</code>を実装してください。以下のように呼び出して使うものとします：</p>
+    <p>int型に、拡張メソッド<code>Sanbai</code>を実装してください。<br>
+      元の値の3倍の値を出力するものです。<br>
+      以下のように呼び出して使うものとします：</p>
     <p class="source">class Program<br>
       {<br>
       &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
@@ -90,7 +92,9 @@
     <p>期待する出力結果：</p>
     <p class="console">300</p>
     <h2>　</h2>
-    <p>int型に、偶数かどうかを判定する拡張メソッド<code>IsEvenNumber</code>を実装してください。以下のように呼び出して使うものとします：</p>
+    <p>int型に、拡張メソッド<code>IsEvenNumber</code>を実装してください。<br>
+      元の値が偶数かどうかを判定するものです。結果をbool型で返却してください（偶数ならtrue、奇数ならfalse）。<br>
+      以下のように呼び出して使うものとします：</p>
     <p class="source">class Program<br>
       {<br>
       &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
@@ -109,7 +113,9 @@
       &nbsp;&nbsp;&nbsp; }<br>
       }</p>
     <h2>&nbsp;</h2>
-    <p>float型に、度数法をラジアンに変換する拡張メソッド<code>Deg2Rad</code>を実装してください。以下のように呼び出して使うものとします：</p>
+    <p>float型に、拡張メソッド<code>Deg2Rad</code>を実装してください。<br>
+      度数法の値をラジアンに変換するものです。<br>
+      以下のように呼び出して使うものとします：</p>
     <p class="source">class Program<br>
       {<br>
       &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
@@ -121,7 +127,9 @@
     <p class="console">6.283185</p>
     <p>ヒント：度をπ/180倍すれば、ラジアンになります。</p>
     <h2>　</h2>
-    <p>次のプログラムは、入力された整数値を3倍してからコンソールに出力するプログラムです。正しく動作するように、拡張メソッド<code>ToInt</code>と<code>Output</code>を定義してください。</p>
+    <p>次のプログラムは、入力された整数値を3倍してからコンソールに出力するプログラムです。正しく動作するように、拡張メソッド<code>ToInt</code>と<code>Output</code>を定義してください。<br>
+      <code>ToInt</code>はstring型に対する拡張メソッドです。文字列をint型に変換して返却します。<br>
+      <code>Output</code>もstring型に対する拡張メソッドです。</p>
     <p class="source">class Program<br>
       {<br>
       &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
@@ -132,9 +140,10 @@
     <p>期待する動作：</p>
     <p class="console">100 <span style="color: #009900;">←入力</span><br>
       300 <span style="color: #009900;">←出力</span></p>
-    <p>ヒント：拡張メソッド<code>Output</code>の中では単純に<code>Console.WriteLine()</code>を呼び出してください。戻り値は無し（void）です。</p>
+    <p>ヒント：拡張メソッド<code>ToInt</code>の中ではint.Parse()を呼び出してください。<br>
+      ヒント：拡張メソッド<code>Output</code>の中では単純に<code>Console.WriteLine()</code>を呼び出してください。戻り値は無し（void）です。</p>
     <h2>　</h2>
-    <p>次のプログラムは、入力された文字列を5回繰り返して出力するプログラムです。正しく動作するように、拡張メソッド<code>Repeat</code>を定義してください。</p>
+    <p>次のプログラムは、入力された文字列を5回繰り返して出力するプログラムです。正しく動作するように、string型に対する拡張メソッド<code>Repeat</code>を定義してください。</p>
     <p class="source">class Program<br>
       {<br>
       &nbsp;&nbsp;&nbsp; static void Main(string[] args)<br>
