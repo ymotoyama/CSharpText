@@ -195,6 +195,36 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(item);<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+    <p><br>
+    </p>
+    <p>Select()の引数は Func&lt;TSource, TResult&gt;型のdelegateなので、1つ値を受け取り、1つ値を返却するような関数を指定することができます。例えば、次のように使うことができます。</p>
+    <p class="source"><span style="color: #219a43;">// 標準入力から入力された、スペース区切りの数値を、int型に変し、各項目を2倍する</span><br>
+      var numbers = Console.ReadLine().Split(' ').Select(<strong>int.Parse</strong>).Select(n =&gt; n * 2);<br>
+      <br>
+      <span style="color: #219a43;">// 内容をすべて出力する</span><br>
+      foreach (var num in numbers)<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; Console.WriteLine(num);<br>
+      }</p>
+    <p><br>
+    </p>
+    <p>Select()には、コレクションの index（要素番号）を取得するオーバーロードがあります。大抵、匿名クラスやタプルという機能とともに使うことになると思います。</p>
+    <p class="source"><span style="color: #219a43;">// 名前に "山" を含む Character の index を抽出する</span><br>
+      var indices = characters<br>
+      &nbsp;&nbsp;&nbsp; .Select((chara, index) =&gt; (chara, index))&nbsp;&nbsp; <span
+        style="color: #219a43;">// Characterとindexをまとめたタプルを作成</span><br>
+      &nbsp;&nbsp;&nbsp; .Where(x =&gt; x.chara.Name.Contains("山"))&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// 名前に"山"を含むものだけ抽出</span><br>
+      &nbsp;&nbsp;&nbsp; .Select(x =&gt; x.index);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+        style="color: #219a43;">// indexのみ抽出したコレクションに</span><br>
+      <br>
+      <span style="color: #219a43;">// indices の内容をすべて出力</span><br>
+      foreach (int index in indices)<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; Console.WriteLine(index);<br>
+      }</p>
+    <p><br>
+    </p>
     <h1>Any　条件を満たす要素があるか？</h1>
     <p>指定した条件を満たす要素が1つでも含まれているかどうかを調べるのが<code>Any</code>です。</p>
     <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Nameが上川という項目が含まれているか？");<br>
@@ -213,7 +243,8 @@
     <p><code>Min</code>を使うと最小値、<code>Max</code>を使うと最大値が取得できます。</p>
     <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("最小レベルは" + characters.Min(c =&gt; c.Level));<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("最大レベルは" + characters.Max(c =&gt; c.Level));</p>
-    <p>正直、使えそうで使えない機能なんじゃないかと思います。ゲーム制作では「最小値」や「最大値」そのものが必要な場合より、「最小値を持つキャラクター」や「最大値を持つキャラクター」などが必要になることが多いと思うので。それを実現するためには後述のAggregateを使います。</p>
+    <p>正直、使えそうで使えない機能なんじゃないかと思います。ゲーム制作では「最小値」や「最大値」そのものが必要な場合より、「最小値を持つキャラクター」や「最大値を持つキャラクター」などが必要になることが多いと思うので。それを実現するためには後述のOrderByで並び替えてから先頭の項目を取り出すか、後述のAggregateを使います。</p>
+    <p>※.NET6、C#10からは<code>MinBy</code>、<code>MaxBy</code>というメソッドが追加され、「最小値を持つキャラクター」などの抽出が簡単にできるようになっています。</p>
     <h1>Sum　合計値を求める</h1>
     <p><code>Sum</code>を使うと、合計値が取得できます。コレクションがシンプルに合計を求められる型（例：int型の配列など）であれば、引数なしのSum()を呼び出すだけで済みます。Characterのコレクションから、レベルの合計値を求めたいというような場合は、以下のようにします。</p>
     <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("レベルの合計は" + characters.Sum(c =&gt; c.Level));</p>
@@ -226,6 +257,65 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(c);<br>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
     <p>ゲーム制作では、たまに使うかなって感じです。「先頭から3体までにダメージを与える」みたいな感じで。</p>
+    <p><br>
+    </p>
+    <h1>First、FirstOrDefault</h1>
+    <p>Firstはオーバーロードによって、用途が大きく異なります。引数の無いパターンは、単純に先頭の項目を返却します。</p>
+    <p class="source"><span style="color: #219a43;">// 先頭の項目</span><br>
+      Console.WriteLine(characters.First());</p>
+    <p><br>
+    </p>
+    <p>引数ありのパターンでは、delegateによって、条件を指定し、条件に該当する最初の項目を返却します。</p>
+    <p class="source"><span style="color: #219a43;">// レベルが50未満のキャラクターで最初に出現するもの</span><br>
+      Console.WriteLine(characters.First(c=&gt;c.Level &lt; 50));</p>
+    <p>なお、条件に該当する項目が見つからない場合は、InvalidOperationExceptionがスローされます。</p>
+    <p>上限に該当する項目が見つからない可能性がある場合は、FirstOrDefaultを使うと良いでしょう。FirstOrDefaultを使うと、見つからない場合は、その型のデフォルト値が返却されます。例えば、int型なら0、参照型ならnullです。</p>
+    <p>null ではなく、任意の値を返却したい場合は、<code>??</code>（Null合体演算子）を使うと便利です。</p>
+    <p class="source"><span style="color: #219a43;">// レベルが10未満のキャラクターで最初に出現するものを抽出する。<br>
+        // 見つからなければ、名無しさんを返却する。</span><br>
+      var result = characters.FirstOrDefault(c =&gt; c.Level &lt; 10) ?? new Character("名無しさん", 1, 1);<br>
+      Console.WriteLine(result);</p>
+    <p><br>
+    </p>
+    <h1>ToArray, ToList</h1>
+    <p>LINQの機能の戻り値は、大半が<code>IEnumerable</code>型です。コレクション（データ集合）として扱う分には、そのままで困らないことも多いですが、配列型として扱ったり、List型として扱ったりしたいなあ、ということもよくあるでしょう。</p>
+    <p>そのようなときは、<code>ToArray</code>や<code>ToList</code>を使います。</p>
+    <p>ToArrayを使うとIEnumerable型が配列型に変換され、ToListを使うとIEnumerable型がList型に変換されます。</p>
+    <p class="source"><span style="color: #219a43;">// レベルが50以上のCharacterのみ抽出し、配列に変換</span><br>
+      Character[] array = characters.Where(c =&gt; c.Level &gt;= 50).ToArray();<br>
+      <span style="color: #219a43;">// レベルが50以上のCharacterのみ抽出し、Listに変換</span><br>
+      List&lt;Character&gt; list = characters.Where(c =&gt; c.Level &gt;= 50).ToList();</p>
+    <p><br>
+    </p>
+    <h1>ForEach</h1>
+    <p>List型にはForEachという機能があります。これは、厳密にはLINQの機能ではないのですが、LINQのような使い心地であり、LINQとの相性が良いでしょう。</p>
+    <p>List型のForEachは、引数にdelegateを受け取り、内容の各項目に対して、delegateの処理を適用するものです。</p>
+    <p class="source"><span style="color: #219a43;">// レベルの昇順でソートし、先頭5つを出力する</span><br>
+      characters.OrderBy(c =&gt; c.Level).Take(5).ToList().ForEach(Console.WriteLine);</p>
+    <p><br>
+    </p>
+    <p>ForEachという機能が、なぜListには実装されているのにLINQとしては実装されていない（IEnumerableに対して実装されていない）のかは、技術的な問題ではなく、C#開発者の設計思想によるもののようです。</p>
+    <p><a href="https://ericlippert.com/2009/05/18/foreach-vs-foreach/"
+        title="https://ericlippert.com/2009/05/18/foreach-vs-foreach/">https://ericlippert.com/2009/05/18/foreach-vs-foreach/</a></p>
+    <ul>
+      <li>副作用を起こせてしまうから</li>
+      <li>foreachで十分だから。同じことを実現するのに複数の書き方があるのは混乱を引き起こす</li>
+    </ul>
+    <p>とのことです。まあ、気持ちはわからなくはない。でもForEach便利やん…</p>
+    <p>間にToListを挟めばLINQと一緒にForEachが使えますが、美しくないし、処理負荷も気になるので、LINQでForEachを使いたい人は、IEnumerableに対して、以下の拡張メソッドを追加しましょう。</p>
+    <p class="source">public static class ForEachExtension<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; public static void ForEach&lt;T&gt;(this IEnumerable&lt;T&gt; e, Action&lt;T&gt; action)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; foreach (var item in e)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; action(item);<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>上記の拡張メソッドを追加すれば、ToListを挟まなくても、ForEachが使えます。</p>
+    <p class="source"><span style="color: #219a43;">// レベルの昇順でソートし、先頭5つを出力する</span><br>
+      characters.OrderBy(c =&gt; c.Level).Take(5).ForEach(Console.WriteLine);</p>
     <h1>組み合わせる</h1>
     <p>これまでに紹介したLINQの機能は、ほとんど全てが、組み合わせて使うことができます。</p>
     <p class="source">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine("Levelが50以上のキャラクターをHP降順で並べる");<br>
@@ -247,7 +337,8 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(highest2);</p>
     <p><code>First</code>は先頭の項目を取得するメソッドです。 <code>Aggregate</code>を使ったコードより簡単で読みやすいと思います。</p>
     <p>ただ、項目数が少ない場合はこの書き方でも問題無いと思いますが、項目数が多い場合は、パフォーマンスが悪化します。<code>Aggregate</code>の場合は、全項目を一周舐めるだけで処理が終わりますが、<code>OrderBy</code>は全項目のソートなので、項目数が多い場合は、無駄な並び替えがパフォーマンスを悪化させます（最大または最小が決まれば良いだけなのに、それ以外の全ての項目も並べ替えるため）。</p>
-    <p>なお、<code>First</code>は、項目が存在しない場合は例外が発生するので、項目が存在しない可能性がある場合は、事前に個数をチェックするか、<code>FirstOrDefault</code>を使ってください。FirstOrDefaultは、項目が存在しない場合は、既定値（intやfloatなら0、参照型ならnull）が返却されます。</p>
+    <p><br>
+    </p>
     <h1>練習問題</h1>
     <p>5章「動作確認の準備」で作成したコードに対して、以下の要求を満たすプログラムを作成してください。</p>
     <h2>　</h2>
@@ -269,6 +360,20 @@
     <p>LINQの<code>Aggregate</code>を使って、全ての要素を掛け合わせ（2 * 3 * 4 * 5 * 6）、結果をコンソールに出力してください。</p>
     <p>期待する出力結果：</p>
     <p class="console">720</p>
+    <p><br>
+    </p>
+    <h1>パフォーマンスについて</h1>
+    <p>すっきり書けて、慣れると読みやすいLINQですが、実行時のパフォーマンスでいうと、劣っています。</p>
+    <p>処理速度は、LINQを使わずに書いたコードよりも若干遅くなります。<br>
+      また、内部処理で、小さなオブジェクトを生成してメモリ上にゴミが溜まるため、ガベージコレクションを引き起こします。</p>
+    <p>上記の欠点は、一般的なビジネスアプリケーションにおいては、誤差のようなものですが、パフォーマンスが要求されるゲーム開発においては、致命的になることもあるでしょう。</p>
+    <p>会社に入ったら、LINQを使うかどうかは、現場の方針に合わせてください。</p>
+    <p>学生時代の、特に就活作品においてLINQを使うかは、とても悩ましい問題です。</p>
+    <p>LINQをうまく使ったコードはエレガントであり、一定のスキルを持つことを示すことができるでしょう。しかし、人によっては「LINQをゲームで使うなんてけしからん！こいつは、無知である」と判断するかもしれません。</p>
+    <p>見る人次第なので、正直、なんとも言えないです。</p>
+    <p>アウトゲーム部分（タイトル画面、ステージ選択画面、など）であれば、パフォーマンスにそこまで神経質になることもないので、使っても問題ありません。</p>
+    <p><br>
+    </p>
     <p><br>
     </p>
     <p></p>
