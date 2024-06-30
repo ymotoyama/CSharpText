@@ -174,6 +174,77 @@
     </ul>
     <p><br>
     </p>
+    <h1>Unityでの活用例</h1>
+    <p>Unityでゲームを作っていると、「○秒後に処理を行う」というようなプログラムを書くことが頻繁にあります。<br>
+      素直に書くとけっこう面倒だし、読みにくいコードになってしまうんですよね。</p>
+    <p>拡張メソッド、そして、今まで学習してきた、コルーチン、Action、ラムダ式などを組み合わせて、「○秒後に処理を行う」を簡単に実現する機能を作って みましょう！</p>
+    <h2>MonoBehaviourに拡張メソッドを追加する</h2>
+    <p>Unityにて、新規C#スクリプトを追加します。名前は「MonoBehaviourExtensions」としましょう。</p>
+    <p class="source">using System;<br>
+      using System.Collections;<br>
+      using UnityEngine;<br>
+      <span style="color: #219a43;"><br>
+        /// &lt;summary&gt;<br>
+        /// MonoBehaviour に対する拡張メソッドを定義する<br>
+        /// &lt;/summary&gt;</span><br>
+      public static class MonoBehaviourExtensions<br>
+      {<br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; /// &lt;summary&gt;<br>
+        &nbsp;&nbsp;&nbsp; /// 指定の秒数後に、任意の処理を実行します。<br>
+        &nbsp;&nbsp;&nbsp; /// &lt;/summary&gt;<br>
+        &nbsp;&nbsp;&nbsp; /// &lt;param name="delay"&gt;待機時間（秒）&lt;/param&gt;<br>
+        &nbsp;&nbsp;&nbsp; /// &lt;param name="action"&gt;待機時間後に実行される処理&lt;/param&gt;</span><br>
+      &nbsp;&nbsp;&nbsp; public static void DelayedCall(this MonoBehaviour mb,float delay, Action action)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mb.StartCoroutine(DelayedCallCoroutine(delay, action));<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      <br>
+      <span style="color: #219a43;">&nbsp;&nbsp;&nbsp; // DelayedCall 用のコルーチン</span><br>
+      &nbsp;&nbsp;&nbsp; private static IEnumerator DelayedCallCoroutine(float delay, Action action)<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield return new WaitForSeconds(delay);<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; action();<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p><b>注意点：</b></p>
+    <ul>
+      <li>staticクラスである</li>
+      <li>何も継承していない（MonoBehaviourを継承していない）</li>
+    </ul>
+    <p><br>
+    </p>
+    <p>以上で、「○秒後に処理を行う」を簡単に実現する機能の完成です。<br>
+      MonoBehaviourのインスタンスを通じて、DelayedCallを呼び出せば、「○秒後に処理を行う」ができます。</p>
+    <h2>使ってみる</h2>
+    <p>使ってみましょう。<br>
+      GameObjectにアタッチされた任意のオブジェクトで、DelayedCallを呼び出します。以下は簡単な例です：</p>
+    <p class="source">using UnityEngine;<br>
+      <br>
+      public class Test : MonoBehaviour<br>
+      {<br>
+      &nbsp;&nbsp;&nbsp; void Update()<br>
+      &nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (Input.GetKeyDown(KeyCode.Alpha1))<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.DelayedCall(3.0f, () =&gt; print("hoge"));<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+      &nbsp;&nbsp;&nbsp; }<br>
+      }</p>
+    <p>1キーを押すと、3秒後にログが出ます。</p>
+    <p><b>注意点：</b><br>
+      必ず、明示的に <code>this</code> と記述する必要があります。これは、DelayedCall() が拡張メソッドであるために、言語仕様上、仕方のないことです。</p>
+    <h2>必要？</h2>
+    <p>たしかに、呼び出し側のプログラムはとても短くなりましたが、定義側はそれなりの量があり、トータルでプログラムの量が減ったわけではありません。むしろシ ンプルに書いたときよりも増えているでしょう。それでも、こういったものは、わざわざ定義するべきなのでしょうか？</p>
+    <p>答えは、ケースバイケースではありますが、多くの場合にYesになるでしょう。<br>
+      プロジェクト内に、同じ処理が何度も登場するほど、お得さが増していきます。</p>
+    <p>また、メリットは、「同じプログラムを何度も書かなくて良くなる」ことだけではありません。<br>
+      煩雑で面倒な処理を、関数として名前を付けて分離することで、メインロジックの純度が増してコードが読みやすくやります。</p>
+    <p>「この処理、何回も書いてないか？」、「この処理、メインロジックとは直接関係無いんだけど、煩雑だなあ」というようなときは、今回のように、拡張メソッドなどを使ってうまくまとめられないか、検討してみてください。（※必ずしも拡張メソッドが最適とは限りません。今回のケースでは、コルーチンの実行に MonoBehaviourのインスタンスが必要だったため、拡張メソッドが適していますが、MonoBehaviourが関係無いならば、単なる static関数のほうが適しているかもしれません）</p>
+    <p><br>
+    </p>
+    <p><br>
+    </p>
     <p></p>
   </body>
 </html>
